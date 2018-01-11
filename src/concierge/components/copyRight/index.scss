@@ -1,0 +1,31 @@
+.span {
+    color: #ffffff;
+    font-family: 'Omnes Pro';
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 7.2px;
+}
+
+.copyRight {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.firstSpan {
+    @extend .span;
+    line-height: 0.9;
+}
+
+.secondSpan {
+    @extend .span;
+    line-height: 0.3;
+    letter-spacing: 0;
+    margin: 0 16px;
+}
+
+.thirdSpan {
+    @extend .span;
+    line-height: 0.89;
+}

@@ -1,0 +1,14 @@
+{
+  "plugins": ["transform-object-rest-spread", "react-hot-loader/babel", "transform-function-bind"],
+  "env": {
+    "test": {
+      "presets": ["env", "react", "es2017"]
+    },
+    "development": {
+      "presets": [["env", { "modules": false }], "react", "es2017"]
+    },
+    "production": {
+      "presets": ["env", "react", "es2017"]
+    }
+  }
+}

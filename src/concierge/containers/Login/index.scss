@@ -1,0 +1,126 @@
+$loginBoxHeight: 480px;
+$loginBoxWidth: 480px;
+
+h1 {
+    margin: 0;
+    font-family: 'Open Sans';
+    font-weight: normal;
+    font-size: 36px;
+    line-height: 1.11;
+    letter-spacing: 3.6px;
+    text-align: center;
+    color: #717171;
+    margin-bottom: 55px;;
+}
+
+.block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    position: relative;
+}
+
+.loginContainer {
+    min-height: 100%;
+    background: url('../../assets/login_bg.jpg') no-repeat center;
+    background-size: cover;
+    min-width: $loginBoxWidth;    
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    flex-shrink: 0;
+
+    &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 100%; 
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, .38);
+    }
+    
+    .loginFormContainer {
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+        min-width: $loginBoxWidth;
+        min-height: $loginBoxHeight;
+        width: $loginBoxWidth;
+        height: $loginBoxHeight;
+        border-radius: 4px;
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        font-family: 'Open Sans';
+        padding: 40px 80px 110px;
+        box-sizing: border-box;
+        flex-shrink: 0;
+
+        .loginForm {
+            display: flex;
+            flex-grow: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            .formRow {
+                display: flex;
+                flex-direction: row;
+            }
+            .submitButton {
+                border-radius: 10px;
+                background-color: #78c91f;
+                box-shadow: 0 1px 2px 0 #c8c8c8;
+                font-family: 'Open Sans';
+                font-size: 24px;
+                line-height: 1;
+                text-align: center;
+                color: #ffffff;
+                border: none;
+                padding: 15px 0;
+                min-width: 100%;
+                
+                &:hover {
+                    opacity: 0.5;
+                }
+                
+                &:focus {
+                    outline: none;
+                }
+            }
+        }
+    }
+
+    .defTopBottomSpan {
+        color: #ffffff;
+        font-family: 'Omnes Pro';
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: 7.2px;
+    }
+
+    .topSection, .bottomSection {
+        @extend .block;
+        flex-shrink: 0;
+        align-items: center;
+        height: 25%;
+    }
+    
+    .topSection {
+        justify-content: flex-start;
+        padding: 16px 0;
+        span {
+            @extend .defTopBottomSpan;
+            line-height: 2.22;
+        }
+    }
+
+    .bottomSection {
+        padding: 48px 0;
+        justify-content: flex-end;
+    }
+}

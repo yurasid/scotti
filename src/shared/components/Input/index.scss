@@ -1,0 +1,165 @@
+$mainColor: #9cdbff;
+$mainDarkColor: #009bf5;
+$errorColor: #e16950;
+$validColor: #75df00;
+
+.errorsContainer {
+    position: absolute;
+    bottom: 0;
+    span {
+        font-family: 'Open Sans';
+        font-size: 12px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: 1.33;
+        letter-spacing: 1.4px;
+        text-align: left;
+        color: #e16950;
+    }
+}
+
+.fullContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    transition: 0.3s ease-in-out;
+    padding-bottom: 22px;
+}
+
+:local {
+    .label--common {
+        position: absolute;
+        font-size: 18px;
+        padding: 8px 0;
+        
+        line-height: 1.33;
+        letter-spacing: 1.8px;
+        text-align: left;
+
+        transition: 0.3s ease-in-out;
+    }
+
+    .label--normal {
+        @extend .label--common;
+        color: $mainColor;
+    }
+
+    .label--active {
+        @extend .label--normal;
+        padding: 0;
+        font-size: 14px;
+    }
+
+    .input--container--common {
+        display: flex;
+        flex-direction: row;
+        border-bottom: 2px solid $mainColor;
+        padding: 8px 0;
+
+        input {
+            font-size: 18px;
+            width: 100%;
+            background-color: transparent;
+            border: 0px solid;
+            &:focus {
+                outline: none;
+            }
+        }
+    }
+}
+
+.inputContainerNormal {
+    @extend .input--container--common;
+    input {
+        color: $mainColor;
+    }
+
+    g {
+        stroke: $mainColor;
+    }
+}
+
+.inputContainerWithIcon {
+    input {
+        margin-left: 16px;
+    }
+}
+
+.inputContainerActive {
+    border-bottom: 2px solid $mainDarkColor;
+    input {
+        color: $mainDarkColor;
+    }
+
+    g {
+        stroke: $mainDarkColor;
+    }
+}
+
+.inputContainerError {
+    border-bottom: 2px solid $errorColor;
+    input {
+        color: $errorColor;
+    }
+
+    g {
+        stroke: $errorColor;
+    }
+}
+
+.inputContainerValid {
+    border-bottom: 2px solid $validColor;
+    input {
+        color: $validColor;
+    }
+
+    g {
+        stroke: $validColor;
+    }
+}
+
+.labelError {
+    color: $errorColor;
+}
+
+.labelValid {
+    color: $validColor;
+}
+
+.labelNormal {
+    @extend .label--normal;
+}
+
+.labelActive {
+    @extend .label--active;
+    transform: translate3d(0, -90%, 0);
+}
+
+.labelIconNormal {
+    @extend .label--normal;
+    left: 40px;
+}
+
+.labelIconActive {
+    @extend .label--active;
+    transform: translate3d(-40px, -90%, 0);
+}
+
+.toggleVisibility {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin: 0 16px;
+    label {
+        display: flex;
+    }
+    input {
+        display: none;
+    }
+    g {
+        stroke: #45b5f2;
+    }
+}
+    
