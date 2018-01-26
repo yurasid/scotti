@@ -1,4 +1,5 @@
 import React, { Fragment, Component } from 'react';
+import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Icon } from '../';
@@ -18,6 +19,7 @@ class Input extends Component {
     render() {
         const {
             placeholder,
+            autocomplete,
             label,
             type,
             icon,
@@ -71,10 +73,10 @@ class Input extends Component {
                             id={name}
                             {...input}
                             type={isPassField ? (toggleVisibility ? 'text' : 'password') : type}
-                            placeholder={placeholder}
+                            placeholder={placeholder} autoComplete={autocomplete}
                         />
                         {isPassField && (
-                            <div 
+                            <div
                                 className={inputStyles.toggleVisibility}
                                 onMouseEnter={() => {
                                     this.setState({
@@ -104,7 +106,11 @@ class Input extends Component {
                     </div>
                     {!active && touched && error && (
                         <div className={inputStyles.errorsContainer}>
-                            <span>{error}</span>
+                            <span>
+                                {error.id ? (
+                                    <FormattedMessage {...error} />
+                                ) : error}
+                            </span>
                         </div>
                     )}
                 </div>
@@ -119,13 +125,14 @@ Input.propTypes = {
         touched: PropTypes.bool,
         active: PropTypes.bool,
         valid: PropTypes.bool,
-        error: PropTypes.string
+        error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape({})])
     }),
     icon: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.bool
     ]),
     placeholder: PropTypes.string,
+    autocomplete: PropTypes.string,
     success: PropTypes.string,
     error: PropTypes.string,
     warning: PropTypes.string,
@@ -142,6 +149,7 @@ Input.propTypes = {
 Input.defaultProps = {
     save: null,
     placeholder: '',
+    autocomplete: '',
     meta: {},
     label: '',
     inputValue: '',

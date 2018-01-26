@@ -1,0 +1,23 @@
+.container {
+    background-color: rgb(0, 155, 245);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-self: stretch;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.startSpan {
+    font-family: 'Open Sans';
+    font-size: calc(22px + 0.5vmin);
+    font-weight: bold;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: 2px;
+    text-align: center;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin-bottom: calc(20px + 0.5vmin);
+    margin-top: calc(10px + 0.5vmin);
+}

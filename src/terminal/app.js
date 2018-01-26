@@ -12,7 +12,7 @@ import {
     generateHttpOptions
 } from '../shared/utils/http';
 
-require('./index.global.scss');
+// require('./index.global.scss');
 
 addLocaleData([...en, ...fr]);
 
@@ -54,7 +54,7 @@ class Root extends Component {
         /* <IntlProvider key={locale}> to force a full teardown until the underlying React context issue is resolved. */
 
         return (
-            <IntlProvider key={locale} locale={locale} messages={messages}> 
+            <IntlProvider key={locale} locale={locale} messages={messages}>
                 <Routes />
             </IntlProvider>
         );

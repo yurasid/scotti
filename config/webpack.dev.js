@@ -1,17 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
-const constants = require('./constants.js');
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 
-module.exports = merge(common, {
-    entry: {
-        concierge: [
-            'react-hot-loader/patch',
-            'babel-polyfill',
-            path.join(constants.SRC, '/concierge/app.js'),
-        ]
-    },
+const constants = require('./constants.js');
+
+const devExtendConfig = {
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
@@ -21,15 +15,34 @@ module.exports = merge(common, {
     module: {
         rules: [
             {
-                test: /\.(png|jpe?g|svg|gif|ttf|woff|woff2|eot|otf)$/i,
+                test: /\.svg$/,
                 use: [
-                    'file-loader',
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            outputPath: 'assets/'
+                        }
+                    }
+                ],
+                exclude: [
+                    path.resolve(constants.SHARED_SRC, './images/icons'),
+                ]
+            },
+            {
+                test: /\.(png|jpe?g|gif|ttf|woff|woff2|eot|otf)$/i,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            outputPath: '/assets/'
+                        }
+                    }
                 ]
             }
         ]
     },
     output: {
-        filename: '[name].js',
+        filename: '[name].js'
     },
     devtool: 'inline-source-map',
     // This is required for React Router. For production, or any other server,
@@ -45,4 +58,6 @@ module.exports = merge(common, {
         host: '0.0.0.0',
         index: 'concierge.html'
     }
-});
+};
+
+module.exports = [merge(common.conciergeCommon, devExtendConfig), merge(common.terminalCommon, devExtendConfig)];

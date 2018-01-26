@@ -1,6 +1,9 @@
 $loginBoxHeight: 480px;
 $loginBoxWidth: 480px;
 
+$errorColor: #e16950;
+$grayColor: #717171;
+
 h1 {
     margin: 0;
     font-family: 'Open Sans';
@@ -9,8 +12,7 @@ h1 {
     line-height: 1.11;
     letter-spacing: 3.6px;
     text-align: center;
-    color: #717171;
-    margin-bottom: 55px;;
+    color: $grayColor;
 }
 
 .block {
@@ -67,6 +69,13 @@ h1 {
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
+            position: relative;
+            padding-top: 80px;
+            .formError {
+                top: 10px;
+                position: absolute;
+                color: $errorColor;
+            }
             .formRow {
                 display: flex;
                 flex-direction: row;

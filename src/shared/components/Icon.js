@@ -3,15 +3,17 @@ import ReactDOM from 'react-dom';
 import { renderToString } from 'react-dom/server';
 import PropTypes from 'prop-types';
 
-import username from '!svg-react-loader?name=username!../images/user-name-icon.svg';
-import password from '!svg-react-loader?name=password!../images/password-icon.svg';
-import showpass from '!svg-react-loader?name=showpass!../images/icon-show-password.svg';
-import hidepass from '!svg-react-loader?name=hidepass!../images/icon-hide-password.svg';
-import logodef from '!svg-react-loader?name=logodef!../images/logo-def.svg';
-import logout from '!svg-react-loader?name=logout!../images/logout-icon.svg';
-import tech from '!svg-react-loader?name=tech!../images/tech-support.svg';
-import usericon from '!svg-react-loader?name=usericon!../images/icon-user.svg';
-import scottilogo from '!svg-react-loader?name=scottilogo!../images/scotti.svg';
+import username from '../images/icons/user-name-icon.svg';
+import password from '../images/icons/password-icon.svg';
+import showpass from '../images/icons/icon-show-password.svg';
+import hidepass from '../images/icons/icon-hide-password.svg';
+import logodef from '../images/icons/logo-def.svg';
+import logout from '../images/icons/logout-icon.svg';
+import tech from '../images/icons/tech-support.svg';
+import usericon from '../images/icons/icon-user.svg';
+import scottilogo from '../images/icons/scotti.svg';
+import bellpressed from '../images/icons/concierge-bell-pressed.svg';
+import bell from '../images/icons/concierge-bell.svg';
 
 const icons = {
     username,
@@ -22,7 +24,9 @@ const icons = {
     logout,
     tech,
     usericon,
-    scottilogo
+    scottilogo,
+    bellpressed,
+    bell
 };
 
 class IconComponent extends Component {
@@ -34,7 +38,7 @@ class IconComponent extends Component {
 
     componentDidMount() {
         const { height: propsHeight, width: propsWidth } = this.props;
-        const svgNode = ReactDOM.findDOMNode(this).firstChild;
+        const svgNode = ReactDOM.findDOMNode(this).firstChild; // eslint-disable-line react/no-find-dom-node
 
         if (svgNode && (propsHeight || propsWidth)) {
             const { width, height } = svgNode.getBBox();

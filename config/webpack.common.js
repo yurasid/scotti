@@ -2,41 +2,45 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const constants = require('./constants.js');
+const WebpackShellPlugin = require('webpack-shell-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const merge = require('webpack-merge');
 
-module.exports = {
+const constants = require('./constants.js');
+
+const hotReloading = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
+
+const defConfig = {
     plugins: [
         new ExtractTextPlugin({
             filename: `[name].css`,
             disable: process.env.NODE_ENV === 'development'
         }),
-        new CleanWebpackPlugin(
-            ['dist'],
-            { root: path.resolve(__dirname, '..') }
-        ),
-        new HtmlWebpackPlugin({
-            title: 'CONCIERGE',
-            filename: 'index.html',
-            chunks: ['concierge'],
-            alwaysWriteToDisk: true,
-            template: path.join(constants.CONCIERGE_SRC, 'index.ejs')
+        new WebpackShellPlugin({
+            onBuildStart: ['echo "Webpack Start"'],
+            onBuildEnd: ['./node_modules/.bin/babel-node ./scripts/translate.js && echo "Webpack End"']
         }),
-
-
         new webpack.NamedModulesPlugin()
     ],
-    output: {
-        path: constants.DIST,
-        publicPath: '/'
-    },
     module: {
         rules: [
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
                 use: [
-                    'babel-loader'
+                    {
+                        loader: 'babel-loader',
+                        query: {
+                            presets: ['es2017', 'react'],
+                            plugins: [
+                                'transform-class-properties',
+                                ['transform-es2015-classes', { loose: true }],
+                                'transform-object-rest-spread'
+                            ]
+                        }
+                    },
+                    'eslint-loader'
                 ]
             },
             {
@@ -54,6 +58,15 @@ module.exports = {
                         'postcss-loader'
                     ]
                 }))
+            },
+            {
+                test: /\.svg$/,
+                use: [
+                    'svg-react-loader'
+                ],
+                include: [
+                    path.resolve(constants.SHARED_SRC, './images/icons'),
+                ]
             },
             {
                 test: /\.global\.scss$/,
@@ -93,4 +106,57 @@ module.exports = {
         ],
         extensions: ['.js', '.jsx'],
     },
+};
+
+module.exports = {
+    conciergeCommon: merge(defConfig, {
+        name: 'concierge',
+        entry: [/* hotReloading,  */'babel-polyfill', path.join(constants.SRC, '/concierge/app.js')],
+        output: {
+            path: path.resolve(constants.DIST, './concierge'),
+        },
+        plugins: [
+            new CleanWebpackPlugin(
+                [constants.CONCIERGE_DIST],
+                { root: path.resolve(__dirname, '..') }
+            ),
+            new CopyWebpackPlugin([
+                {
+                    from: path.join(constants.CONCIERGE_SRC, 'server.js'),
+                    to: path.join(constants.CONCIERGE_DIST, 'server.js')
+                }
+            ]),
+            new HtmlWebpackPlugin({
+                title: 'CONCIERGE',
+                filename: 'index.html',
+                alwaysWriteToDisk: true,
+                template: path.join(constants.CONCIERGE_SRC, 'index.ejs')
+            }),
+        ]
+    }),
+    terminalCommon: merge(defConfig, {
+        name: 'terminal',
+        entry: [/* hotReloading,  */'babel-polyfill', path.join(constants.SRC, '/terminal/app.js')],
+        output: {
+            path: path.resolve(constants.DIST, './terminal')
+        },
+        plugins: [
+            new CleanWebpackPlugin(
+                [constants.TERMINAL_DIST],
+                { root: path.resolve(__dirname, '..') }
+            ),
+            new CopyWebpackPlugin([
+                {
+                    from: path.join(constants.TERMINAL_SRC, 'server.js'),
+                    to: path.join(constants.TERMINAL_DIST, 'server.js')
+                }
+            ]),
+            new HtmlWebpackPlugin({
+                title: 'TERMINAL',
+                filename: 'index.html',
+                alwaysWriteToDisk: true,
+                template: path.join(constants.TERMINAL_SRC, 'index.ejs')
+            }),
+        ]
+    })
 };

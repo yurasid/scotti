@@ -1,40 +1,45 @@
-import { SET_CURRENT_USER } from '../actionTypes';
+import { CURRENT_USER_FETCHED, CURRENT_USER_LOADING } from '../actionTypes';
 import {
     localRequest,
     generateHttpOptions,
     checkHttpStatus,
     handleHttpError,
-} from '../../../shared/services/http';
+} from '../../../shared/utils/http';
 
-const uri = '/api/user';
+const uri = '/api/concierge';
 
-export function setCurrentUser(data) {
+export function currentUserLoadingStatus(state) {
     return {
-        type: SET_CURRENT_USER,
-        payload: data,
+        type: CURRENT_USER_LOADING,
+        payload: {
+            loading: !!state
+        }
     };
 }
 
-export function isAuthenticated() {
-    return (dispatch, getState, history) => localRequest(`${uri}/current`, generateHttpOptions({
-        method: 'GET',
-    }))
-        .then(checkHttpStatus)
-        .then(response => response.json())
-        .then(user => dispatch(setCurrentUser(user)))
-        .catch(() => history.push('/login'));
+export function setCurrentUser(data) {
+    return {
+        type: CURRENT_USER_FETCHED,
+        payload: { ...data, loading: false }
+    };
 }
 
 export function fetchCurrentUser() {
-    return () => Promise.resolve();
+    const fetchCurrentUserDispatch = async (dispatch) => {
+        try {
+            const fetchResponse = await localRequest(`${uri}/me`, generateHttpOptions({
+                method: 'GET',
+            }));
 
-    return (dispatch, getState, history) => localRequest(`${uri}/current`, generateHttpOptions({
-        method: 'GET',
-    }))
-        .then(checkHttpStatus)
-        .then(response => response.json())
-        .then(user => dispatch(setCurrentUser(user)))
-        .catch(() => history.push('/login'));
+            dispatch(setCurrentUser(fetchResponse));
+        } catch (error) {
+            await handleHttpError(error, `${uri}/refresh`);
+
+            await fetchCurrentUserDispatch(dispatch);
+        }
+    };
+
+    return fetchCurrentUserDispatch;
 }
 
 export function changePass(data) {
