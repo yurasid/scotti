@@ -38,5 +38,5 @@ app.get('/translations/:lang', (req, res) => {
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, '/index.html')));
 
 app.listen(9000, () => {
-    console.log('React Concierge part at: http://localhost:9000');
+    console.log('React Concierge part at: http://localhost:9000'); // eslint-disable-line no-console
 });

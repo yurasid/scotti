@@ -29,8 +29,8 @@ class Video extends Component {
             }
         }
 
-        function errorCallback(error) {
-            console.log('navigator.getUserMedia error: ', error);
+        function errorCallback() {
+            
         }
 
         navigator.getUserMedia(constraints, successCallback, errorCallback);
