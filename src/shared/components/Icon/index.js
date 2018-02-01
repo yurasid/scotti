@@ -3,17 +3,17 @@ import ReactDOM from 'react-dom';
 import { renderToString } from 'react-dom/server';
 import PropTypes from 'prop-types';
 
-import username from '../images/icons/user-name-icon.svg';
-import password from '../images/icons/password-icon.svg';
-import showpass from '../images/icons/icon-show-password.svg';
-import hidepass from '../images/icons/icon-hide-password.svg';
-import logodef from '../images/icons/logo-def.svg';
-import logout from '../images/icons/logout-icon.svg';
-import tech from '../images/icons/tech-support.svg';
-import usericon from '../images/icons/icon-user.svg';
-import scottilogo from '../images/icons/scotti.svg';
-import bellpressed from '../images/icons/concierge-bell-pressed.svg';
-import bell from '../images/icons/concierge-bell.svg';
+import username from '../../images/icons/user-name-icon.svg';
+import password from '../../images/icons/password-icon.svg';
+import showpass from '../../images/icons/icon-show-password.svg';
+import hidepass from '../../images/icons/icon-hide-password.svg';
+import logodef from '../../images/icons/logo-def.svg';
+import logout from '../../images/icons/logout-icon.svg';
+import tech from '../../images/icons/tech-support.svg';
+import usericon from '../../images/icons/icon-user.svg';
+import scottilogo from '../../images/icons/scotti.svg';
+import bellpressed from '../../images/icons/concierge-bell-pressed.svg';
+import bell from '../../images/icons/concierge-bell.svg';
 
 const icons = {
     username,

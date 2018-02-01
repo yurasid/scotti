@@ -5,6 +5,8 @@ import { IntlProvider, addLocaleData } from 'react-intl';
 import en from 'react-intl/locale-data/en';
 import fr from 'react-intl/locale-data/fr';
 
+// import { BACKEND_SOCKET_URL } from '../../config/constants';
+
 import Routes from './routes';
 
 import {
@@ -30,11 +32,11 @@ class Root extends Component {
     }
 
     getTranslations = async () => {
-        try { 
+        try {
             const { messages, locale } = await localRequest(`/translations/${language}`, generateHttpOptions({
                 method: 'GET'
             }));
-    
+
             return this.setState({
                 messages,
                 locale
@@ -46,6 +48,13 @@ class Root extends Component {
 
     componentWillMount() {
         this.getTranslations();
+
+        /* const socket = new WebSocket(BACKEND_SOCKET_URL);
+
+        socket.onopen = () => {
+            socket.send(JSON.stringify({ 'action': 'subscribe', 'room': 1 }));
+        }; */
+
     }
 
     render() {
@@ -54,7 +63,7 @@ class Root extends Component {
         /* <IntlProvider key={locale}> to force a full teardown until the underlying React context issue is resolved. */
 
         return (
-            <IntlProvider key={locale} locale={locale} messages={messages}> 
+            <IntlProvider key={locale} locale={locale} messages={messages}>
                 <Routes />
             </IntlProvider>
         );

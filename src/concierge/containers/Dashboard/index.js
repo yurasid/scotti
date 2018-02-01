@@ -2,36 +2,19 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { injectIntl, FormattedMessage, defineMessages } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import { fetchCurrentUser, currentUserLoadingStatus } from '../../redux/actions/user';
 import { logout } from '../../redux/actions/auth';
 
 import { Icon } from '../../../shared/components';
-import CopyRight from '../../components/copyRight/';
-import UserInfo from '../../components/useInfo';
-import MenuItem from '../../components/menuItem';
+
+import { CopyRight, UserInfo, MainContainer, Video } from '../../components/';
 
 import './index.global.scss';
 
-const messages = defineMessages({
-    menu1: {
-        id: 'Dashboard.menu.storesLocation',
-        defaultMessage: 'Stores Location'
-    },
-    menu2: {
-        id: 'Dashboard.menu.promotions',
-        defaultMessage: 'Promotions'
-    },
-    menu3: {
-        id: 'Dashboard.menu.bars_restraunts',
-        defaultMessage: 'Bars & Restaurants'
-    },
-    menu4: {
-        id: 'Dashboard.menu.emergency',
-        defaultMessage: 'Emergency'
-    }
-});
+
+
 class Home extends Component {
     handlerLogout = async () => {
         const { history, logoutDispatch } = this.props;
@@ -41,14 +24,14 @@ class Home extends Component {
         history.push('/');
     }
 
-    checkCurrentUser = async() => {
+    checkCurrentUser = async () => {
         const {
             currentUser,
             fetchCurrentUserDispatch,
             currentUserLoadingStatusDispatch,
             history
         } = this.props;
-    
+
         if (!currentUser || (!currentUser.id && !currentUser.loading)) {
             try {
                 currentUserLoadingStatusDispatch(true);
@@ -65,8 +48,6 @@ class Home extends Component {
     }
 
     render() {
-        const { intl: { formatMessage } } = this.props;
-
         return (
             <Fragment>
                 <header>
@@ -90,15 +71,9 @@ class Home extends Component {
                 </header>
                 <main>
                     <aside className='block16 left blue'>Left</aside>
-                    <section className='mainContent center'>
-                        <nav>
-                            <MenuItem text={formatMessage(messages.menu1)} />
-                            <MenuItem text={formatMessage(messages.menu2)} />
-                            <MenuItem text={formatMessage(messages.menu3)} />
-                            <MenuItem text={formatMessage(messages.menu4)} />
-                        </nav>
-                        <div>Video call component</div>
-                    </section>
+                    <MainContainer>
+                        <Video />
+                    </MainContainer>
                     <aside className='block16 right blue'>
                         <h2>
                             <FormattedMessage
@@ -120,7 +95,11 @@ class Home extends Component {
                     </aside>
                 </main>
                 <footer>
-                    <div className='block block16 left blue tech-support'>
+                    <div className='block block16 left blue' />
+                    <div className='block center'>
+                        <CopyRight color='#ebebeb' />
+                    </div>
+                    <div className='block block16 right blue tech-support'>
                         <Icon name='tech' />
                         <div>
                             <span>
@@ -132,10 +111,6 @@ class Home extends Component {
                             <span>818-402-0605</span>
                         </div>
                     </div>
-                    <div className='block center'>
-                        <CopyRight color='#ebebeb' />
-                    </div>
-                    <div className='block block16 right blue' />
                 </footer>
             </Fragment>
         );

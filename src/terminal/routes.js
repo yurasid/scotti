@@ -12,6 +12,7 @@ import { ProtectedRoute } from '../shared/components/';
 import Main from './containers/Main/';
 import Start from './containers/Start/';
 import Login from './containers/Login';
+import Call from './containers/Video';
 
 require('./index.global.scss');
 
@@ -94,6 +95,10 @@ const Router = () => (
                     <ProtectedRoute
                         path='/start'
                         component={Start}
+                    />
+                    <ProtectedRoute
+                        path='/call'
+                        component={Call}
                     />
                     <Route path='/login' component={Login} />
                 </Switch>

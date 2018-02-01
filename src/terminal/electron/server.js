@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const sync = require('glob').sync;
 const bodyParser = require('body-parser');
-const CONSTANTS = require('../../config/constants');
+const CONSTANTS = require('./constants');
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false, limit: 1024 * 1024 * 200 }));
 
 app.use(express.static(path.resolve(__dirname)));
 
-app.use('/api', proxy('http://192.168.88.247:8080', {
+app.use('/api', proxy(CONSTANTS.BACKEND_URL, {
     preservHostHdr: true,
     proxyReqPathResolver: req => req.url
 }));
@@ -21,13 +21,13 @@ app.use('/api', proxy('http://192.168.88.247:8080', {
 app.get('/translations/:lang', (req, res) => {
     const language = req.params.lang;
     const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
-    const filepath = sync(`${CONSTANTS.TERMINAL_LANG_DIR}/*.json`)
+    const filepath = sync(`${CONSTANTS.LANG_DIR}/*.json`)
         .sort()
         .find((filepath) => {
             const filename = path.basename(filepath, '.json');
 
             return filename === language || filename === languageWithoutRegionCode;
-        }) || `${CONSTANTS.TERMINAL_LANG_DIR}/en.json`;
+        }) || `${CONSTANTS.LANG_DIR}/en.json`;
 
     res.json({
         locale: path.basename(filepath, '.json'),

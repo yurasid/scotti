@@ -1,2 +1,3 @@
 export const CURRENT_USER_FETCHED = 'CURRENT_USER_FETCHED';
-export const ESLINT = 'CURRENT_USER_FETCHED'; /* delete */
+export const SET_LOCAL_STREAM = 'SET_LOCAL_STREAM';
+export const SET_REMOTE_STREAM = 'SET_REMOTE_STREAM';

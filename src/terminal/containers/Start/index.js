@@ -13,8 +13,13 @@ const messages = defineMessages({
     }
 });
 
-const Start = ({ intl: { formatMessage } }) => (
-    <div className={styles.container}>
+const Start = ({ history, intl: { formatMessage } }) => (
+    <div
+        className={styles.container}
+        onClick={() => {
+            history.push('/call');
+        }}
+    >
         <Ringing
             icon='bell'
             iconActive='bellpressed'

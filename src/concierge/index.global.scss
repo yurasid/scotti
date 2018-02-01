@@ -50,12 +50,6 @@ section, main {
 .block {
     flex-direction: row;
     justify-content: center;
-    &.left {
-        align-self: flex-start;
-    }
-    &.left {
-        align-self: flex-end;
-    }
 }
 
 .block.block16, .block16 {

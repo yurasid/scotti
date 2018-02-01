@@ -14,12 +14,16 @@ const hotReloading = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=
 const defConfig = {
     plugins: [
         new ExtractTextPlugin({
-            filename: `[name].css`,
+            filename: '[name].css',
             disable: process.env.NODE_ENV === 'development'
         }),
         new WebpackShellPlugin({
             onBuildStart: ['echo "Webpack Start"'],
-            onBuildEnd: ['./node_modules/.bin/babel-node ./scripts/translate.js && echo "Webpack End"']
+            onBuildEnd: [
+                './node_modules/.bin/electron-icon-maker --input=./src/concierge/icon.png --output=./dist/concierge',
+                './node_modules/.bin/babel-node ./scripts/translate.js',
+                'echo "Webpack End"'
+            ]
         }),
         new webpack.NamedModulesPlugin()
     ],
@@ -117,13 +121,13 @@ module.exports = {
         },
         plugins: [
             new CleanWebpackPlugin(
-                [constants.CONCIERGE_DIST],
+                [constants.CONCIERGE_DIST, constants.MESSAGES_DIR],
                 { root: path.resolve(__dirname, '..') }
             ),
             new CopyWebpackPlugin([
                 {
-                    from: path.join(constants.CONCIERGE_SRC, 'server.js'),
-                    to: path.join(constants.CONCIERGE_DIST, 'server.js')
+                    from: path.join(constants.CONCIERGE_SRC, 'electron/*'),
+                    to: path.join(constants.CONCIERGE_DIST, '[name].[ext]')
                 }
             ]),
             new HtmlWebpackPlugin({
@@ -142,13 +146,13 @@ module.exports = {
         },
         plugins: [
             new CleanWebpackPlugin(
-                [constants.TERMINAL_DIST],
+                [constants.TERMINAL_DIST, constants.MESSAGES_DIR],
                 { root: path.resolve(__dirname, '..') }
             ),
             new CopyWebpackPlugin([
                 {
-                    from: path.join(constants.TERMINAL_SRC, 'server.js'),
-                    to: path.join(constants.TERMINAL_DIST, 'server.js')
+                    from: path.join(constants.TERMINAL_SRC, 'electron/*'),
+                    to: path.join(constants.TERMINAL_DIST, '[name].[ext]')
                 }
             ]),
             new HtmlWebpackPlugin({
