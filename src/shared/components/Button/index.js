@@ -65,14 +65,14 @@ class Ring extends Component {
             containerStyle.color = color1;
 
             if (icon) {
-                iconProps.height = minMeasure * 0.80;
+                iconProps.height = minMeasure * 0.8;
                 iconProps.color = color2;
             }
         }
 
         return (
             <div { ...containerProps }>
-                {icon && !active && <Icon name={icon} {...iconProps} />}
+                {icon && <Icon name={icon} {...iconProps} />}
                 {text && <span className={styles.textSpan}>{text}</span>}
             </div>
         );

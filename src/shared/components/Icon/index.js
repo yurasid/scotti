@@ -36,8 +36,8 @@ class IconComponent extends Component {
         this.state = {};
     }
 
-    componentDidMount() {
-        const { height: propsHeight, width: propsWidth } = this.props;
+    getDimensions = (props) => {
+        const { height: propsHeight, width: propsWidth } = props;
         const svgNode = ReactDOM.findDOMNode(this).firstChild; // eslint-disable-line react/no-find-dom-node
 
         if (svgNode && (propsHeight || propsWidth)) {
@@ -58,10 +58,26 @@ class IconComponent extends Component {
             newWidth = propsWidth || width * percent;
             newHeight = propsHeight || height * percent;
 
-            this.setState({
+            return {
                 height: newHeight,
                 width: newWidth
-            });
+            };
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const newSizes = this.getDimensions(nextProps);
+
+        if (newSizes) {
+            this.setState(newSizes);
+        }
+    }
+
+    componentDidMount() {
+        const newSizes = this.getDimensions(this.props);
+
+        if (newSizes) {
+            this.setState(newSizes);
         }
     }
 
@@ -81,14 +97,6 @@ class IconComponent extends Component {
         };
 
         let iconString;
-
-        if (height) {
-            styles.height = height;
-        }
-
-        if (width) {
-            styles.width = width;
-        }
 
         if (Icon) {
             iconString = renderToString(<Icon {...styles} {...props} />);
