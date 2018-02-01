@@ -20,9 +20,9 @@
     "test": "jest --watch",
     "test:nowatch": "jest",
     "coverage": "jest --coverage --watch",
-    "lint": "eslint ./src --fix --ext js",
-    "precommit": "npm run lint && npm run test:nowatch",
-    "prepush": "npm run lint && npm run test:nowatch"
+    "lint": "eslint ./src --fix --ext js --ignore-pattern '/electron/'",
+    "precommit": "npm run lint",
+    "prepush": "npm run lint"
   },
   "dependencies": {
     "babel-plugin-react-intl": "2.3.1",
