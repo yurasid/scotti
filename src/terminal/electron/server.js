@@ -62,4 +62,4 @@ module.exports = function (electronApp) {
     app.listen(9001, () => {
         console.log('React Terminal part at: http://localhost:9001'); // eslint-disable-line no-console
     });
-}
+};
