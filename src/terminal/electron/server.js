@@ -5,38 +5,61 @@ const fs = require('fs');
 const sync = require('glob').sync;
 const bodyParser = require('body-parser');
 const CONSTANTS = require('./constants');
+const util = require('util'); 
 
-const app = express();
+const readFile = util.promisify(fs.readFile);
 
-app.use(bodyParser.json({ strict: false, limit: 1024 * 1024 * 200 }));
-app.use(bodyParser.urlencoded({ extended: false, limit: 1024 * 1024 * 200 }));
+module.exports = function (electronApp) {
 
-app.use(express.static(path.resolve(__dirname)));
+    const app = express();
 
-app.use('/api', proxy(CONSTANTS.BACKEND_URL, {
-    preservHostHdr: true,
-    proxyReqPathResolver: req => req.url
-}));
+    app.use(bodyParser.json({ strict: false, limit: 1024 * 1024 * 200 }));
+    app.use(bodyParser.urlencoded({ extended: false, limit: 1024 * 1024 * 200 }));
 
-app.get('/translations/:lang', (req, res) => {
-    const language = req.params.lang;
-    const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
-    const filepath = sync(`${CONSTANTS.LANG_DIR}/*.json`)
-        .sort()
-        .find((filepath) => {
-            const filename = path.basename(filepath, '.json');
+    app.use(express.static(path.resolve(__dirname)));
 
-            return filename === language || filename === languageWithoutRegionCode;
-        }) || `${CONSTANTS.LANG_DIR}/en.json`;
+    app.use('/api', proxy(CONSTANTS.BACKEND_URL, {
+        preservHostHdr: true,
+        proxyReqPathResolver: req => req.url,
+        proxyReqBodyDecorator: async () => {
+            const filePath = path.resolve(electronApp.getPath('userData'), 'user.json');
+            let response = {};
 
-    res.json({
-        locale: path.basename(filepath, '.json'),
-        messages: JSON.parse(fs.readFileSync(filepath, 'utf8'))
+            try {
+                response = JSON.parse(await readFile(filePath, 'utf-8'));
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
+            }
+
+            return response;
+        }
+    }));
+
+    app.use('/api', proxy(CONSTANTS.BACKEND_URL, {
+        preservHostHdr: true,
+        proxyReqPathResolver: req => req.url
+    }));
+
+    app.get('/translations/:lang', async (req, res) => {
+        const language = req.params.lang;
+        const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
+        const filepath = sync(`${CONSTANTS.LANG_DIR}/*.json`)
+            .sort()
+            .find((filepath) => {
+                const filename = path.basename(filepath, '.json');
+
+                return filename === language || filename === languageWithoutRegionCode;
+            }) || `${CONSTANTS.LANG_DIR}/en.json`;
+
+        res.json({
+            locale: path.basename(filepath, '.json'),
+            messages: JSON.parse(await readFile(filepath, 'utf8'))
+        });
     });
-});
 
-app.get('*', (req, res) => res.sendFile(path.join(__dirname, '/index.html')));
+    app.get('*', (req, res) => res.sendFile(path.join(__dirname, '/index.html')));
 
-app.listen(9001, () => {
-    console.log('React Terminal part at: http://localhost:9001'); // eslint-disable-line no-console
-});
+    app.listen(9001, () => {
+        console.log('React Terminal part at: http://localhost:9001'); // eslint-disable-line no-console
+    });
+}

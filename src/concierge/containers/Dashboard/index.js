@@ -6,16 +6,26 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 
 import { fetchCurrentUser, currentUserLoadingStatus } from '../../redux/actions/user';
 import { logout } from '../../redux/actions/auth';
+import { setCurrentPeer, setRemoteStream } from '../../redux/actions/peerConnection';
 
-import { Icon } from '../../../shared/components';
+import PeerConnection from '../../../shared/utils/peerConnection';
+import initSockets from '../../../shared/utils/webSockets';
 
-import { CopyRight, UserInfo, MainContainer, Video } from '../../components/';
+import { Footer, Header, MainContainer, Video, LeftAside } from '../../components/';
 
 import './index.global.scss';
 
 
 
 class Home extends Component {
+    constructor() {
+        super();
+
+        this.state = {
+            offer: null
+        };
+    }
+
     handlerLogout = async () => {
         const { history, logoutDispatch } = this.props;
 
@@ -43,36 +53,40 @@ class Home extends Component {
         }
     }
 
+    gotOffer = (msg) => {
+        this.setState({
+            offer: msg
+        });
+    }
+
     componentWillMount() {
+        const { setCurrentPeerDispatch, setRemoteStreamDispatch } = this.props;
+
+
+        const peerConnection = new PeerConnection(setRemoteStreamDispatch);
+
+        initSockets('concierge', (err) => {
+            if (err) {
+                return alert('no sockets');
+            }
+
+            peerConnection.subscribeOnSockets(this.gotOffer);
+        });
+
+        setCurrentPeerDispatch(peerConnection);
         this.checkCurrentUser();
     }
 
     render() {
+        const { offer } = this.state;
+
         return (
             <Fragment>
-                <header>
-                    <div className='block block16 left userInfo'>
-                        <UserInfo />
-                    </div>
-                    <div className='block logo center'>
-                        <Icon name='logodef' />
-                    </div>
-                    <div className='block block16 right'>
-                        <div className='logout' onClick={this.handlerLogout}>
-                            <span>
-                                <FormattedMessage
-                                    id='Dashboard.logout'
-                                    defaultMessage='Logout'
-                                />
-                            </span>
-                            <Icon name='logout' />
-                        </div>
-                    </div>
-                </header>
+                <Header handlerLogout={this.handlerLogout}/>
                 <main>
-                    <aside className='block16 left blue'>Left</aside>
+                    <LeftAside />
                     <MainContainer>
-                        <Video />
+                        {offer && <Video offer={offer} />}
                     </MainContainer>
                     <aside className='block16 right blue'>
                         <h2>
@@ -94,24 +108,7 @@ class Home extends Component {
                         </ul>
                     </aside>
                 </main>
-                <footer>
-                    <div className='block block16 left blue' />
-                    <div className='block center'>
-                        <CopyRight color='#ebebeb' />
-                    </div>
-                    <div className='block block16 right blue tech-support'>
-                        <Icon name='tech' />
-                        <div>
-                            <span>
-                                <FormattedMessage
-                                    id='Dashboard.techSupport'
-                                    defaultMessage='Tech Support'
-                                />
-                            </span>
-                            <span>818-402-0605</span>
-                        </div>
-                    </div>
-                </footer>
+                <Footer />
             </Fragment>
         );
     }
@@ -125,6 +122,8 @@ Home.propTypes = {
         loading: PropTypes.bool,
     }).isRequired,
     logoutDispatch: PropTypes.func.isRequired,
+    setCurrentPeerDispatch: PropTypes.func.isRequired,
+    setRemoteStreamDispatch: PropTypes.func.isRequired,
     fetchCurrentUserDispatch: PropTypes.func.isRequired,
     currentUserLoadingStatusDispatch: PropTypes.func.isRequired
 };
@@ -137,6 +136,8 @@ function mapStoreToProps(store) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
+        setCurrentPeerDispatch: setCurrentPeer,
+        setRemoteStreamDispatch: setRemoteStream,
         logoutDispatch: logout,
         fetchCurrentUserDispatch: fetchCurrentUser,
         currentUserLoadingStatusDispatch: currentUserLoadingStatus

@@ -1,12 +1,7 @@
-
-import { BACKEND_SOCKET_URL } from '../../../config/constants';
-
 require('webrtc-adapter');
 
-const socket = new WebSocket(`${BACKEND_SOCKET_URL}?authorization=${window.sessionStorage.getItem('authToken')}`);
-
 function sendMessage(messageJSON = {}) {
-    socket.send(JSON.stringify(messageJSON));
+    window.socket.send(JSON.stringify(messageJSON));
 }
 
 function errorHandler(context) {
@@ -15,61 +10,81 @@ function errorHandler(context) {
     };
 }
 
-function PeerConnection(owner, stream, handler) {
-    const servers = null;
+class PeerConnection {
+    constructor(onRemoteVideoHandler) {
+        const servers = null;
 
-    const pc = new RTCPeerConnection(servers);
+        this.pc = new RTCPeerConnection(servers);
 
-    pc.addStream(stream);
 
-    pc.onicecandidate = function (event) {
-        if (event.candidate) {
-            const { sdpMLineIndex, sdpMid, candidate } = event.candidate;
 
-            sendMessage({
-                type: 'candidate',
-                label: sdpMLineIndex,
-                id: sdpMid,
-                candidate: candidate,
-                handler: owner
-            });
-        }
-    };
+        this.pc.onicecandidate = function (event) {
+            if (event.candidate) {
+                const { sdpMLineIndex, candidate } = event.candidate;
 
-    pc.onaddstream = function (event) {
-        handler(event.stream);
-    };
+                sendMessage({
+                    type: 'candidate',
+                    label: sdpMLineIndex,
+                    candidate: candidate
+                });
+            }
+        };
 
-    if (owner === 'terminal') {
-        pc.createOffer(function (desc) {
-            pc.setLocalDescription(desc);
+        this.pc.onaddstream = function (event) {
+            onRemoteVideoHandler(event.stream);
+        };
+    }
 
+    addStream = (stream) => {
+        this.pc.addStream(stream);
+    }
+
+    subscribeOnSockets = (onOfferHandler) => {
+        window.socket.onmessage = (message) => {
+            const msg = JSON.parse(message.data || message);
+
+            switch (msg.type) {
+                case 'offer':
+                    onOfferHandler ? onOfferHandler(msg) : this.createAnswer(msg);
+                    break;
+
+                case 'answer':
+                    this.pc.setRemoteDescription(new RTCSessionDescription(msg));
+                    break;
+
+                case 'candidate':
+                    this.pc.addIceCandidate(new RTCIceCandidate({
+                        sdpMLineIndex: msg.label,
+                        candidate: msg.candidate
+                    }), () => { }, errorHandler('AddIceCandidate'));
+                    break;
+
+                default:
+                    break;
+            }
+        };
+    }
+
+    close = () => {
+        window.socket.close();
+        this.pc.close();
+        sendMessage({ type: 'hangup' });
+    }
+
+    createOffer = () => {
+        this.pc.createOffer((desc) => {
+            this.pc.setLocalDescription(desc);
             sendMessage(desc);
         }, errorHandler('createOffer'));
     }
 
-    socket.onmessage = function (message) {
-        const msg = JSON.parse(message.data || message);
-
-        if (msg.type === 'offer') {
-            pc.setRemoteDescription(new RTCSessionDescription(msg));
-            pc.createAnswer(function (desc) {
-                pc.setLocalDescription(desc);
-                sendMessage(desc);
-            }, errorHandler('createAnswer'));
-        } else if (msg.type === 'answer') {
-            pc.setRemoteDescription(new RTCSessionDescription(msg));
-        } else if (msg.type === 'candidate') {
-            var candidate = new RTCIceCandidate({
-                sdpMLineIndex: msg.label,
-                candidate: msg.candidate
-            });
-
-            pc.addIceCandidate(candidate, () => {}, errorHandler('AddIceCandidate'));
-        }
-    };
-
-    this.pc = pc;
+    createAnswer = (msg) => {
+        this.pc.setRemoteDescription(new RTCSessionDescription(msg));
+        this.pc.createAnswer((desc) => {
+            this.pc.setLocalDescription(desc);
+            sendMessage(desc);
+        }, errorHandler('createAnswer'));
+    }
 }
 
 export default PeerConnection;

@@ -52,7 +52,7 @@ class Ring extends Component {
         const containerProps = {
             ref: container => this.container = container,
             className: classNames({
-                [styles.circle]: true,
+                [styles.button]: true,
                 [styles.active]: !!active
             }),
             style: containerStyle
@@ -65,7 +65,7 @@ class Ring extends Component {
             containerStyle.color = color1;
 
             if (icon) {
-                iconProps.height = minMeasure * 0.8;
+                iconProps.height = minMeasure * 0.4;
                 iconProps.color = color2;
             }
         }

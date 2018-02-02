@@ -13,7 +13,7 @@
     display: flex;
     flex-grow: 1;
     align-self: stretch;
-    margin-left: 10vmin;
+    margin: 0 2vmin 0 15vmin;
     overflow: hidden;
     & > video {
         width: 100%;
@@ -25,14 +25,19 @@
 
 
 .controlContainer {
-    width: 10vmin;
-    padding: 2vmin;
+    width: 15vmin;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    overflow: hidden;
+}
+
+.myVideo {
+    flex: 1 0 30vmin;
+    display: flex;
+    overflow: hidden;
     & > video {
-        display: flex;
-        flex-grow: 1;
-        align-self: stretch;
+        object-fit: cover;
+        width: 100%;
     }
 }

@@ -1,6 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import PeerConnection from '../../shared/utils/peerConnection';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import { setLocalStream } from '../redux/actions/peerConnection';
 
 class Video extends Component {
     constructor() {
@@ -13,16 +17,11 @@ class Video extends Component {
     }
 
     gotStream = (stream) => {
-        this.localeStream = stream;
-        this.myvideo.srcObject = stream;
+        const { currentPeer: { peer }, msg, setLocalStreamDispatch } = this.props;
 
-        setTimeout(() => {
-            this.peerConnection = new PeerConnection('concierge', stream, this.gotremoteStream);
-        }, 2000);
-    }
+        setLocalStreamDispatch(stream);
 
-    gotremoteStream = (stream) => {
-        this.myvideo.srcObject = stream;
+        peer.createAnswer(msg);
     }
 
     start() {
@@ -35,8 +34,26 @@ class Video extends Component {
             });
     }
 
+    deinitComponent = () => {
+        const { 
+            currentPeer: { peer, localStream },
+            setLocalStreamDispatch 
+        } = this.props;
+        
+        this.video.pause();
+
+        if (localStream) {
+            localStream.getTracks().map(track => track.stop());
+        }
+
+        peer.close();
+        setLocalStreamDispatch(null);
+    }
+
     hangup = () => {
-        this.peerConnection.pc.close();
+        const { setLocalStreamDispatch } = this.props;
+        this.video.pause();
+        setLocalStreamDispatch(null);
     }
 
     componentDidMount() {
@@ -44,28 +61,45 @@ class Video extends Component {
     }
 
     componentWillUnmount() {
-        this.myvideo.pause();
-        this.conciergevideo.pause();
+        this.video.pause();
+    }
 
-        if (this.localeStream) {
-            this.localeStream.getTracks().map(track => track.stop());
-        }
+    componentDidUpdate() {
+        const { currentPeer: { remoteStream } } = this.props;
+
+        this.video && (this.video.srcObject = remoteStream);
     }
 
     render() {
         return (
-            <Fragment>
-                <video
-                    autoPlay
-                    ref={video => this.myvideo = video}
-                />
-                <video
-                    autoPlay
-                    ref={video => this.conciergevideo = video}
-                />
-            </Fragment>
+            <video
+                autoPlay
+                ref={video => this.video = video}
+            />
         );
     }
 }
 
-export default Video;
+Video.propTypes = {
+    msg: PropTypes.shape({}).isRequired,
+    currentPeer: PropTypes.shape({
+        peer: PropTypes.shape({}).isRequired,
+        localStream: PropTypes.shape({}),
+        remoteStream: PropTypes.shape({}),
+    }).isRequired,
+    setLocalStreamDispatch: PropTypes.func.isRequired
+};
+
+function mapStoreToProps(store) {
+    return {
+        currentPeer: store.currentPeer,
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({
+        setLocalStreamDispatch: setLocalStream
+    }, dispatch);
+}
+
+export default connect(mapStoreToProps, mapDispatchToProps)(Video);

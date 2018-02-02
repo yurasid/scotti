@@ -3,11 +3,11 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
-require('./server.js');
 
 let mainWindow;
 
 function createWindow () {
+    require('./server.js')(app);
     mainWindow = new BrowserWindow({
         width: 600, 
         height: 900
