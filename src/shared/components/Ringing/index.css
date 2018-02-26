@@ -1,0 +1,150 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: calc(100px + 40vmin);
+    width: calc(100px + 40vmin);
+    margin: 20vmin;
+    border: 0;
+    color: #ffffff;
+}
+
+.container svg {
+    z-index: 12;
+}
+
+.circle.active::before {
+    position: absolute;
+    content: '';
+    border-radius: 50%;
+    background-color: currentColor;
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+    top: 0%;
+    left: 0%;
+    opacity: .4;
+}
+
+
+.container.active .innerCircle, .container.active .middleCircle,
+.container.active .outerCircle
+{
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3vmin currentColor;    
+}
+
+.container.active .innerCircle {
+    height: 100%;
+    width: 100%;
+    
+    top: 0%;
+    left: 0%;
+
+    animation: grow-inner 1.4s linear infinite;
+}
+
+.container.interval.active .innerCircle {
+    animation: grow-inner 1.4s linear 1;
+}
+
+.container.active .middleCircle {
+    --size: calc(100% + 5.8vmin);
+    height: var(--size);
+    width: var(--size);
+    
+    top: -2.9vmin;
+    left: -2.9vmin;
+
+    animation: grow-middle 1.4s linear infinite;
+}
+.container.interval.active .middleCircle {
+    animation: grow-middle 1.4s linear 1;
+}
+
+.container.active .outerCircle {
+    --size: calc(100% + 11.6vmin);
+    height: var(--size);
+    width: var(--size);
+    
+    top: -5.8vmin;
+    left: -5.8vmin;
+    
+    animation: grow-outer 1.4s linear infinite;
+}
+
+.container.interval.active .outerCircle {
+    animation: grow-outer 1.4s linear 1;
+}
+
+@keyframes grow-inner {
+    0% {
+        opacity: .4;
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.1);
+        opacity: .3;
+    }
+    35% {
+        transform: scale(1.2);
+        opacity: .2;
+    }
+    80% {
+        transform: scale(1.1);
+        opacity: .3;
+    }
+    100% {
+        transform: scale(1);
+        opacity: .4;
+    }
+}
+
+@keyframes grow-middle {
+    0% {
+        opacity: .3;
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.15);
+        opacity: .2;
+    }
+    35% {
+        transform: scale(1.3);
+        opacity: .12;
+    }
+    80% {
+        transform: scale(1.15);
+        opacity: .2;
+    }
+    100% {
+        transform: scale(1);
+        opacity: .3;
+    }
+}
+
+@keyframes grow-outer {
+    0% {
+        transform: scale(1);
+        opacity: .2;
+    }
+    25% {
+        transform: scale(1.2);
+        opacity: .1;
+    }
+    35% {
+        transform: scale(1.4);
+        opacity: .05;
+    }
+    80% {
+        transform: scale(1.2);
+        opacity: .1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: .2;
+    }
+}

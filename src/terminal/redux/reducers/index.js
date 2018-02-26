@@ -1,9 +1,9 @@
 import { reducer as formReducer } from 'redux-form';
 import currentUser from './currentUser';
-import stream from './stream';
+import currentPeer from './peerConnection';
 
 export default {
-    streams: stream,
+    currentPeer,
     currentUser,
     form: formReducer
 };

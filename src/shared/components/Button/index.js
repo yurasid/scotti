@@ -5,7 +5,7 @@ import { Icon } from '../';
 
 import styles from './index.scss';
 
-class Ring extends Component {
+class Button extends Component {
     constructor() {
         super();
 
@@ -16,14 +16,38 @@ class Ring extends Component {
         };
     }
 
-    toggleActive = (state) => {
+    mouseDown = () => {
+        const { disabled } = this.props;
+
+        if (disabled) {
+            return true;
+        }
         this.setState({
-            active: (typeof state !== 'undefined' && state) || !this.state.active
+            active: true
         });
     }
 
+    mouseUp = () => {
+        const { onClick, pressed, active, disabled } = this.props;
+
+        if (disabled) {
+            return true;
+        }
+
+        this.setState({
+            active: pressed ? !active : active
+        }, onClick);
+    }
+
     componentDidMount() {
-        const { width, height } = this.container.getBoundingClientRect();
+        const { scale } = this.props;
+        const {
+            width: containerWidth,
+            height: containerHeight
+        } = this.container.getBoundingClientRect();
+
+        const width = containerWidth * scale;
+        const height = containerHeight * scale;
 
         this.setState({
             width,
@@ -36,7 +60,14 @@ class Ring extends Component {
             color1,
             color2,
             icon,
-            text
+            text,
+            style,
+            className,
+            active: propsActive,
+            textColor,
+            allInside,
+            iconScale,
+            disabled
         } = this.props;
 
         const {
@@ -46,50 +77,89 @@ class Ring extends Component {
         } = this.state;
 
         const iconProps = {};
-        const containerStyle = {};
+        const containerStyle = { ...style };
+        const textStyle = { color: textColor };
         const minMeasure = height < width ? height : width;
+        const containerClassNames = {
+            [styles.button]: true
+        };
 
         const containerProps = {
             ref: container => this.container = container,
-            className: classNames({
-                [styles.button]: true,
-                [styles.active]: !!active
-            }),
+            className: classNames(containerClassNames),
             style: containerStyle
         };
-        
-        containerProps.onClick = this.toggleActive;
-            
+
+        containerProps.onMouseDown = this.mouseDown;
+        containerProps.onTouchStart = this.mouseDown;
+        containerProps.onMouseUp = this.mouseUp;
+        containerProps.onTouchEnd = this.mouseUp;
+
+        const colorCondition = (active || propsActive) && color1 !== 'transparent';
+
         if (minMeasure) {
-            containerStyle.height = containerStyle.width = `${minMeasure}px`;
-            containerStyle.color = color1;
+
+            if (allInside) {
+                containerStyle.color = color1;
+                containerProps.className = classNames(containerClassNames, className, {
+                    [styles.disabled]: !!disabled
+                });
+                containerStyle.backgroundColor = colorCondition ? color2 : color1;
+                containerStyle.color = colorCondition ? color1 : color2;
+            }
 
             if (icon) {
-                iconProps.height = minMeasure * 0.4;
-                iconProps.color = color2;
+                !allInside && (iconProps.className = classNames(className, {
+                    [styles.disabled]: !!disabled
+                }));
+                iconProps.height = minMeasure * iconScale;
+                
+                iconProps.color = colorCondition ? color1 : color2;
+                iconProps.backgroundColor = colorCondition ? color2 : color1;
             }
         }
 
         return (
             <div { ...containerProps }>
                 {icon && <Icon name={icon} {...iconProps} />}
-                {text && <span className={styles.textSpan}>{text}</span>}
+                {text &&
+                    <span
+                        style={textStyle}
+                        className={styles.textSpan}
+                    >
+                        {text}
+                    </span>}
             </div>
         );
     }
 }
 
 
-Ring.propTypes = {
+Button.propTypes = {
     icon: PropTypes.string,
     color1: PropTypes.string,
     color2: PropTypes.string,
-    text: PropTypes.string
+    text: PropTypes.string,
+    textColor: PropTypes.string,
+    style: PropTypes.shape({}),
+    className: PropTypes.string,
+    active: PropTypes.bool,
+    onClick: PropTypes.func,
+    pressed: PropTypes.bool,
+    scale: PropTypes.number,
+    allInside: PropTypes.bool,
+    disabled: PropTypes.bool,
+    iconScale: PropTypes.number
 };
 
-Ring.defaultProps = {
+Button.defaultProps = {
     color1: '#ffffff',
-    color2: '#78c91f'
+    color2: '#78c91f',
+    style: {},
+    onClick: () => { },
+    pressed: true,
+    scale: 1,
+    iconScale: 1
 };
 
-export default Ring;
+export default Button;

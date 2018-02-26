@@ -1,25 +1,35 @@
 .headerBlock {
     display: flex;
     align-items: center;
-    width: 70%;
+    position: relative;
+    width: 70vmin;
+}
+
+.headerLeftBlock, .iconContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
+    flex: 1;
 }
 
 .headerLeftBlock {
-    display: flex;
-    flex-direction: column;
+    padding-left: .2vmin;
     align-items: flex-start;
-    justify-content: center;
-    flex: 1 0 70%;
+}
+
+.iconContainer {
+    align-items: flex-end;
 }
 
 .headerSpan {
     font-family: 'Omnes Pro';
-    font-size: calc(30px + 0.5vmin);
+    font-size: 3vw;
     font-weight: 600;
     font-style: normal;
     font-stretch: normal;
     line-height: 1.36;
-    letter-spacing: 24px;
+    letter-spacing: 3vw;
     text-align: left;
     text-transform: uppercase;
 }
@@ -37,11 +47,15 @@
 
 .footerSpan {
     font-family: 'Open Sans';
-    font-size: calc(14px + 0.5vmin);
+    font-size: 2.5vw;
     font-style: normal;
     line-height: 1.43;
-    letter-spacing: 8px;
+    letter-spacing: 1vw;
     text-align: center;
     color: #8b8b8b;
-    padding-top: 16px;
+    padding-top: 1vmin;
+}
+
+.iconContainer {
+    align-self: stretch;
 }

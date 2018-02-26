@@ -3,7 +3,7 @@ const path = require('path');
 const DIST = path.resolve(__dirname, '../dist');
 const SRC = path.resolve(__dirname, '../src');
 const MESSAGES_DIR = path.resolve(DIST, './messages');
-const BACKEND_IP = '192.168.88.225';
+const BACKEND_IP = '45.77.138.235';
 
 module.exports = {
     BACKEND_SOCKET_URL: `ws://${BACKEND_IP}:6001`,

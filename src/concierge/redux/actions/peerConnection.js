@@ -1,20 +1,22 @@
 import {
-    CURRENT_PEER_SET,
     LOCAL_STREEM_SET,
-    REMOTE_STREEM_SET
+    REMOTE_STREEM_SET,
+    CURRENT_FILE_SET
 } from '../actionTypes';
 
-export function setCurrentPeer(data) {
-    return {
-        type: CURRENT_PEER_SET,
-        payload: { peer: data },
-    };
-}
+export * from '../../../shared/redux/actions/peerConnection';
 
 export function setLocalStream(data) {
     return {
         type: LOCAL_STREEM_SET,
         payload: { localStream: data },
+    };
+}
+
+export function setCurrentFile(data) {
+    return {
+        type: CURRENT_FILE_SET,
+        payload: { file: data },
     };
 }
 

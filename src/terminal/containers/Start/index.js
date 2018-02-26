@@ -1,19 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl, defineMessages, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import { Ringing } from '../../../shared/components';
 
 import styles from './index.scss';
 
-const messages = defineMessages({
-    text: {
-        id: 'Main.call.touchToConnect',
-        defaultMessage: 'touch to connect'
-    }
-});
-
-const Start = ({ history, intl: { formatMessage } }) => (
+const Start = ({ history }) => (
     <div
         className={styles.container}
         onClick={() => {
@@ -24,21 +17,36 @@ const Start = ({ history, intl: { formatMessage } }) => (
             icon='bell'
             iconActive='bellpressed'
             color='#ffffff'
-            text={formatMessage(messages.text)}
             interval={10000}
+            withCircle={true}
         />
-        <span className={styles.startSpan}>
-            <FormattedMessage
-                id='Main.call.inquiries'
-                defaultMessage='we are waiting for your inquiries'
-            />
-        </span>
+
+        <FormattedMessage
+            id='Main.call.touchToConnect'
+            defaultMessage='touch to connect'
+        >
+            {(txt) => (
+                <span className={styles.touchSpan}>
+                    {txt}
+                </span>
+            )}
+        </FormattedMessage>
+
+        <FormattedMessage
+            id='Main.call.inquiries'
+            defaultMessage='we are waiting for your inquiries'
+        >
+            {(txt) => (
+                <span className={styles.startSpan}>
+                    {txt}
+                </span>
+            )}
+        </FormattedMessage>
     </div>
 );
 
 Start.propTypes = {
-    history: PropTypes.shape({}).isRequired,
-    intl: PropTypes.shape({}).isRequired,
+    history: PropTypes.shape({}).isRequired
 };
 
-export default injectIntl(Start);
+export default Start;

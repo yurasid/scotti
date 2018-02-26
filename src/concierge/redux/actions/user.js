@@ -1,4 +1,7 @@
-import { CURRENT_USER_FETCHED, CURRENT_USER_LOADING } from '../actionTypes';
+import {
+    CURRENT_USER_FETCHED,
+    CURRENT_USER_LOADING
+} from '../actionTypes';
 import {
     localRequest,
     generateHttpOptions,

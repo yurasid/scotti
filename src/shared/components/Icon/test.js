@@ -4,7 +4,7 @@ import Icon from './index';
 
 test('Link changes the class when hovered', () => {
     const component = renderer.create(
-        <Icon name='logodef' />
+        <Icon name='logorings' />
     );
 
     let tree = component.toJSON();

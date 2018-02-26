@@ -6,23 +6,22 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 
 import { fetchCurrentUser, currentUserLoadingStatus } from '../../redux/actions/user';
 import { logout } from '../../redux/actions/auth';
-import { setCurrentPeer, setRemoteStream } from '../../redux/actions/peerConnection';
+import { setCurrentPeer, setRemoteStream, initEmitter, setCurrentEmitter } from '../../redux/actions/peerConnection';
 
 import PeerConnection from '../../../shared/utils/peerConnection';
-import initSockets from '../../../shared/utils/webSockets';
+import { handleHttpError } from '../../../shared/utils/http';
+import { fetchCurrentTerminal } from '../../redux/actions/terminals';
 
 import { Footer, Header, MainContainer, Video, LeftAside } from '../../components/';
 
 import './index.global.scss';
-
-
 
 class Home extends Component {
     constructor() {
         super();
 
         this.state = {
-            offer: null
+            showIncomingCall: false
         };
     }
 
@@ -45,7 +44,7 @@ class Home extends Component {
         if (!currentUser || (!currentUser.id && !currentUser.loading)) {
             try {
                 currentUserLoadingStatusDispatch(true);
-                await fetchCurrentUserDispatch();
+                return await fetchCurrentUserDispatch();
             } catch (error) {
                 currentUserLoadingStatusDispatch();
                 history.push('/login');
@@ -53,40 +52,106 @@ class Home extends Component {
         }
     }
 
-    gotOffer = (msg) => {
-        this.setState({
-            offer: msg
+    wantCallHandler = async (msg) => {
+        const { fetchCurrentTerminalDispatch } = this.props;
+        const { terminal_id } = msg;
+
+        try {
+            await fetchCurrentTerminalDispatch(terminal_id);
+
+            this.setState({
+                showIncomingCall: true
+            });
+        } catch (error) {
+            console.log(error); // eslint-disable-line
+        }
+    }
+
+    deinit = () => {
+        const {
+            setCurrentPeerDispatch,
+            currentPeer: { peer, emitter }
+        } = this.props;
+
+        if (emitter) {
+            emitter.removeAllListeners();
+        }
+
+        peer && peer.close();
+
+        setCurrentPeerDispatch(null);
+    }
+
+    init = async (props) => {
+        const {
+            currentPeer: {
+                emitter
+            },
+            setCurrentPeerDispatch,
+            setRemoteStreamDispatch,
+            initEmitterDispatch
+        } = props || this.props;
+
+        if (!emitter) {
+            return initEmitterDispatch('concierge');
+        }
+
+        emitter.addListener('want_call', this.wantCallHandler);
+        emitter.addListener('remote_stream', setRemoteStreamDispatch);
+        emitter.addListener('unauthenticated', async () => {
+            const { currentPeer: { emitter } } = this.props;
+            const unauthenticatedError = new Error();
+            unauthenticatedError.code = 401;
+
+            try {
+                await handleHttpError(unauthenticatedError, '/api/concierge/refresh');
+                return emitter.initWS();
+            } catch (error) {
+                return console.error(error); // eslint-disable-line
+            }
         });
+
+        const peerConnection = new PeerConnection(emitter);
+
+        setCurrentPeerDispatch(peerConnection);
     }
 
     componentWillMount() {
-        const { setCurrentPeerDispatch, setRemoteStreamDispatch } = this.props;
+        this.checkCurrentUser()
+            .then(() => {
+                const { currentPeer: { peer, creating }, currentUser: { id } } = this.props;
 
+                !creating && !peer && id && this.init();
+            });
+    }
 
-        const peerConnection = new PeerConnection(setRemoteStreamDispatch);
+    componentWillReceiveProps(nextProps) {
+        const { currentPeer: { peer, creating }, currentUser: { id } } = nextProps;
 
-        initSockets('concierge', (err) => {
-            if (err) {
-                return alert('no sockets');
-            }
+        !creating && !peer && id && this.init(nextProps);
+    }
 
-            peerConnection.subscribeOnSockets(this.gotOffer);
-        });
+    componentWillUnmount() {
+        this.deinit();
 
-        setCurrentPeerDispatch(peerConnection);
-        this.checkCurrentUser();
+        const {
+            setCurrentEmitterDispatch,
+            currentPeer: { emitter }
+        } = this.props;
+
+        emitter && emitter.close() && setCurrentEmitterDispatch(null);
     }
 
     render() {
-        const { offer } = this.state;
+        const { showIncomingCall } = this.state;
 
         return (
             <Fragment>
-                <Header handlerLogout={this.handlerLogout}/>
+                <Header handlerLogout={this.handlerLogout} />
                 <main>
                     <LeftAside />
                     <MainContainer>
-                        {offer && <Video offer={offer} />}
+                        {showIncomingCall ? <Video /> : <Fragment />}
                     </MainContainer>
                     <aside className='block16 right blue'>
                         <h2>
@@ -115,29 +180,44 @@ class Home extends Component {
 }
 
 Home.propTypes = {
-    history: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({}).isRequired,
+    currentPeer: PropTypes.shape({
+        peer: PropTypes.shape({}),
+        emitter: PropTypes.shape({}),
+        creating: PropTypes.bool
+    }),
     currentUser: PropTypes.shape({
         id: PropTypes.number,
         loading: PropTypes.bool,
     }).isRequired,
     logoutDispatch: PropTypes.func.isRequired,
+    initEmitterDispatch: PropTypes.func.isRequired,
+    setCurrentEmitterDispatch: PropTypes.func.isRequired,
     setCurrentPeerDispatch: PropTypes.func.isRequired,
     setRemoteStreamDispatch: PropTypes.func.isRequired,
     fetchCurrentUserDispatch: PropTypes.func.isRequired,
+    fetchCurrentTerminalDispatch: PropTypes.func.isRequired,
     currentUserLoadingStatusDispatch: PropTypes.func.isRequired
 };
 
 function mapStoreToProps(store) {
     return {
-        currentUser: store.currentUser
+        currentUser: store.currentUser,
+        currentPeer: {
+            peer: store.currentPeer.peer,
+            emitter: store.currentPeer.emitter,
+            creating: store.currentPeer.creating
+        }
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         setCurrentPeerDispatch: setCurrentPeer,
+        initEmitterDispatch: initEmitter,
+        setCurrentEmitterDispatch: setCurrentEmitter,
         setRemoteStreamDispatch: setRemoteStream,
+        fetchCurrentTerminalDispatch: fetchCurrentTerminal,
         logoutDispatch: logout,
         fetchCurrentUserDispatch: fetchCurrentUser,
         currentUserLoadingStatusDispatch: currentUserLoadingStatus

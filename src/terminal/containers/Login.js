@@ -4,22 +4,23 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import login from '../redux/actions/login';
+import { fetchCurrentUser } from '../redux/actions/user';
 
 class Login extends Component {
     login = async () => {
-        const { loginDispatch, history } = this.props;
+        const { loginDispatch, fetchCurrentUserDispatch, history } = this.props;
 
         try {
             await loginDispatch({
-                'unique_code': '1thsHX9ACe0KhbFqFmZT3OrFHwBWHnQy',
+                'uid': '7c0b0522-3916-3b03-ac19-ad5805652145',
                 'password': 'secret'
             });
-    
+            await fetchCurrentUserDispatch();
+
             return history.push('/');
         } catch (error) {
             return history.push('/error');
         }
-    
     }
 
     componentWillMount() {
@@ -34,12 +35,14 @@ class Login extends Component {
 }
 
 Login.propTypes = {
-    history: PropTypes.shape({}).isRequired
+    history: PropTypes.shape({}).isRequired,
+    fetchCurrentUserDispatch: PropTypes.func.isRequired
 };
 
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
-        loginDispatch: login
+        loginDispatch: login,
+        fetchCurrentUserDispatch: fetchCurrentUser
     }, dispatch);
 };
 

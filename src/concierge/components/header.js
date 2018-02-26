@@ -11,7 +11,7 @@ const Header = ({ handlerLogout }) => (
             <UserInfo />
         </div>
         <div className='block logo center'>
-            <Icon name='logodef' />
+            <Icon name='logorings' />
         </div>
         <div className='block block16 right'>
             <div className='logout' onClick={handlerLogout}>

@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Icon } from '../';
 
-import styles from './index.scss';
+import styles from './index.css';
 
 class Ring extends Component {
-    constructor() {
+    constructor(props) {
         super();
 
+        const { active } = props;
+
         this.state = {
-            active: false,
+            active: active,
             height: 0,
             width: 0
         };
@@ -50,8 +52,8 @@ class Ring extends Component {
             color,
             icon,
             iconActive,
-            text,
-            interval
+            interval,
+            withCircle
         } = this.props;
 
         const {
@@ -61,13 +63,14 @@ class Ring extends Component {
         } = this.state;
 
         const iconProps = {};
-        const containerStyle = {};
+        const containerStyle = { color };
         const minMeasure = height < width ? height : width;
 
         const containerProps = {
             ref: container => this.container = container,
             className: classNames({
-                [styles.circle]: true,
+                [styles.container]: true,
+                [styles.circle]: withCircle,
                 [styles.active]: !!active,
                 [styles.interval]: !!interval,
             }),
@@ -82,20 +85,18 @@ class Ring extends Component {
             containerStyle.height = containerStyle.width = `${minMeasure}px`;
 
             if (icon) {
-                iconProps.height = minMeasure * 0.80;
-
-                if (color) {
-                    iconProps.color = color;
-                }
+                iconProps.height = minMeasure * 0.8;
+                iconProps.color = color;
             }
         }
 
         return (
             <div { ...containerProps }>
-                <span className={styles.innerCircle} ref={component => this.innerCircle = component}/>
+                <span className={styles.innerCircle} ref={component => this.innerCircle = component} />
+                <span className={styles.middleCircle} />
+                <span className={styles.outerCircle} />
                 {icon && !active && <Icon name={icon} {...iconProps} />}
                 {icon && !!active && <Icon name={iconActive || icon} {...iconProps} />}
-                {text && <span className={styles.textSpan}>{text}</span>}
             </div>
         );
     }
@@ -106,12 +107,15 @@ Ring.propTypes = {
     icon: PropTypes.string,
     iconActive: PropTypes.string,
     color: PropTypes.string,
-    text: PropTypes.string,
-    interval: PropTypes.number
+    interval: PropTypes.number,
+    active: PropTypes.bool,
+    withCircle: PropTypes.bool
 };
 
 Ring.defaultProps = {
-    icon: 'logodef'
+    icon: 'logorings',
+    active: false,
+    color: '#ffffff'
 };
 
 export default Ring;

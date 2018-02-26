@@ -6,7 +6,7 @@ import {
     handleHttpError,
 } from '../../../shared/utils/http';
 
-const uri = '/api/user';
+const uri = '/api/terminal';
 
 export function setCurrentUser(data) {
     return {
@@ -16,15 +16,21 @@ export function setCurrentUser(data) {
 }
 
 export function fetchCurrentUser() {
-    return () => Promise.resolve();
+    const fetchCurrentUserDispatch = async (dispatch) => {
+        try {
+            const fetchResponse = await localRequest(`${uri}/me`, generateHttpOptions({
+                method: 'GET',
+            }));
 
-    /* return (dispatch, getState, history) => localRequest(`${uri}/current`, generateHttpOptions({
-        method: 'GET',
-    }))
-        .then(checkHttpStatus)
-        .then(response => response.json())
-        .then(user => dispatch(setCurrentUser(user)))
-        .catch(() => history.push('/login')); */
+            dispatch(setCurrentUser(fetchResponse));
+        } catch (error) {
+            await handleHttpError(error, `${uri}/refresh`);
+
+            await fetchCurrentUserDispatch(dispatch);
+        }
+    };
+
+    return fetchCurrentUserDispatch;
 }
 
 export function changePass(data) {

@@ -48,13 +48,6 @@ class Root extends Component {
 
     componentWillMount() {
         this.getTranslations();
-
-        /* const socket = new WebSocket(BACKEND_SOCKET_URL);
-
-        socket.onopen = () => {
-            socket.send(JSON.stringify({ 'action': 'subscribe', 'room': 1 }));
-        }; */
-
     }
 
     render() {

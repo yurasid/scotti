@@ -1,0 +1,53 @@
+.fileContainer {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.22);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2vmin;
+    & > img {
+        max-height: 100%;
+        max-width: 40%;
+    }
+}
+
+.button {
+    position: absolute;
+    top: 2vmin;
+    left: 2vmin;
+}
+
+.close{
+    position: absolute;
+    right: 2vmin;
+    top: 2vmin;
+    display: inline-block;
+    width: 2vmin;
+    height: 2vmin;
+    overflow: hidden;
+    &:hover {
+      &::before, &::after {
+        background: #45b5f2;
+      }
+    }
+  
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      height: 2px;
+      width: 100%;
+      top: 50%;
+      left: 0;
+      margin-top: -1px;
+      background: #595959;
+    }
+    &::before {
+    transform: rotate(45deg);
+    }
+    &::after {
+      transform: rotate(-45deg);
+    }
+}

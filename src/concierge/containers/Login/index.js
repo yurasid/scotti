@@ -55,7 +55,7 @@ class Login extends Component {
                 onKeyPress={this.onEnterPress}
             >
                 <div className={loginStyles.topSection}>
-                    <Icon name='logodef' />
+                    <Icon name='logorings' />
                     <span>
                         <FormattedMessage
                             id='Login.logoMessage'

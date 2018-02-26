@@ -5,19 +5,34 @@
     flex-grow: 1;
     align-self: stretch;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    position: relative;
+    padding-bottom: 20%;
+}
+
+.touchSpan {
+    font-family: 'Open Sans';
+    bottom: 25%;
+    font-size: 4vw;
+    font-weight: normal;
+    text-align: left;
+    color: #ffffff;
+    position: absolute;
+    width: 80vmin;
+    text-align: center;
 }
 
 .startSpan {
     font-family: 'Open Sans';
-    font-size: calc(22px + 0.5vmin);
+    font-size: 4vw;
     font-weight: bold;
     font-style: normal;
     line-height: 1.2;
-    letter-spacing: 2px;
     text-align: center;
     color: #ffffff;
     text-transform: uppercase;
     margin-bottom: calc(20px + 0.5vmin);
     margin-top: calc(10px + 0.5vmin);
+    position: absolute;
+    bottom: 5%;
 }

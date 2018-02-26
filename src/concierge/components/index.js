@@ -4,8 +4,9 @@ import Header from './header';
 import Footer from './footer';
 import Popup from './popup/';
 import MainContainer from './mainContainer/';
-import Video from './video';
-import LeftAside from './leftAside';
+import Video from './video/';
+import LeftAside from './leftAside/';
+import File from './fileContainer/';
 
 export {
     CopyRight,
@@ -15,5 +16,6 @@ export {
     LeftAside,
     Popup,
     MainContainer,
-    Video
+    Video,
+    File
 };

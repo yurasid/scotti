@@ -1,11 +1,10 @@
-import { SET_REMOTE_STREAM, SET_LOCAL_STREAM } from '../actionTypes';
+import { CURRENT_TERMINAL_FETCHED } from '../actionTypes';
 
 export const initialState = {};
 
 export default function (state = initialState, action) {
     switch (action.type) {
-        case SET_REMOTE_STREAM:
-        case SET_LOCAL_STREAM: {
+        case CURRENT_TERMINAL_FETCHED: {
             return {
                 ...state,
                 ...action.payload

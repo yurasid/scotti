@@ -7,6 +7,8 @@ import { injectIntl, defineMessages } from 'react-intl';
 import { MenuItem, Popup } from '../';
 import setCurrentPopup from '../../redux/actions/popup';
 
+import styles from './index.scss';
+
 const messages = defineMessages({
     menu1: {
         id: 'Dashboard.menu.storesLocation',
@@ -68,7 +70,7 @@ class MainContainer extends Component {
                         })
                     }
                 </nav>
-                <div>
+                <div className={styles.container}>
                     <Popup>
                         {Component}
                     </Popup>

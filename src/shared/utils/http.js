@@ -18,7 +18,7 @@ export function checkHttpStatus(response) {
 }
 
 export function isUnauthorized(error) {
-    return error.response && error.response.status === 401;
+    return (error.response && error.response.status === 401) || error.code === 401;
 }
 
 export async function handleHttpError(error, refreshUrl) {
@@ -52,7 +52,7 @@ export async function localRequest(uri, options) {
         let fetchResponse = await fetch(url, options);
 
         fetchResponse = checkHttpStatus(fetchResponse);
-        fetchResponse = await fetchResponse.json();
+        fetchResponse && (fetchResponse = await fetchResponse.json());
 
         return fetchResponse;
     } catch (error) {
