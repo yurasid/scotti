@@ -22,8 +22,8 @@ function createWindow() {
         icon: path.resolve(__dirname, platform === 'win32' ? './icons/win/icon.ico' : './icons/png/64.png')
     });
 
-    win.once('ready-to-show', () => {
-        win.show()
+    mainWindow.once('ready-to-show', function () {
+        mainWindow.show()
     });
 
     mainWindow.maximize();
