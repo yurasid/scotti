@@ -16,9 +16,14 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        maximizable: false,
+        show: false,
+        resizable: false,
         autoHideMenuBar: true,
         icon: path.resolve(__dirname, platform === 'win32' ? './icons/win/icon.ico' : './icons/png/64.png')
+    });
+
+    win.once('ready-to-show', () => {
+        win.show()
     });
 
     mainWindow.maximize();
