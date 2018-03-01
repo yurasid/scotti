@@ -9,7 +9,7 @@ const merge = require('webpack-merge');
 
 const constants = require('./constants.js');
 
-const hotReloading = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
+// const hotReloading = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
 
 const defConfig = {
     plugins: [
@@ -20,8 +20,8 @@ const defConfig = {
         new WebpackShellPlugin({
             onBuildStart: ['echo "Webpack Start"'],
             onBuildEnd: [
-                './node_modules/.bin/electron-icon-maker --input=./src/concierge/icon.png --output=./dist/concierge',
-                './node_modules/.bin/babel-node ./scripts/translate.js',
+                `${path.resolve(__dirname, '../node_modules/.bin/electron-icon-maker')} --input=${path.resolve(__dirname, '../src/concierge/icon.png')} --output=${path.resolve(__dirname, '../dist/concierge')}`,
+                `${path.resolve(__dirname, '../node_modules/.bin/babel-node')} ${path.resolve(__dirname, '../scripts/translate.js')}`,
                 'echo "Webpack End"'
             ]
         }),
