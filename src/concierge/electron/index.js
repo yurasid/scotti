@@ -17,12 +17,15 @@ function createWindow() {
         width: 800,
         height: 600,
         show: false,
-        resizable: false,
+        maximizable: false,
+        minimizable: false,
+        fullscreen: true,
+        title: 'Concierge App',
         autoHideMenuBar: true,
         icon: path.resolve(__dirname, platform === 'win32' ? './icons/win/icon.ico' : './icons/png/64.png')
     });
-
-    mainWindow.once('ready-to-show', function () {
+    
+    mainWindow.once('ready-to-show', function() {
         mainWindow.show()
     });
 
