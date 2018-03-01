@@ -9,7 +9,7 @@ const merge = require('webpack-merge');
 
 const constants = require('./constants.js');
 
-const hotReloading = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
+// const hotReloading = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
 
 const defConfig = {
     plugins: [

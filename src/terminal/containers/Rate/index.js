@@ -80,11 +80,11 @@ class Rate extends Component {
     }
 
     componentDidMount() {
-        // this.initTimeout();
+        this.initTimeout();
     }
 
     componentDidUpdate() {
-        // this.initTimeout();
+        this.initTimeout();
     }
 
     componentWillUnmount() {

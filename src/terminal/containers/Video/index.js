@@ -204,11 +204,11 @@ class Video extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        // const { currentPeer: { error } } = nextProps;
+        const { currentPeer: { error } } = nextProps;
 
-        /* if (error)  {
+        if (error)  {
             throw error;
-        } */
+        }
 
         !this.peerConnection && this.init(nextProps);
     }
