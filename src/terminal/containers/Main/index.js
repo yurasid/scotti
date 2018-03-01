@@ -2,6 +2,10 @@ import React, { Component, Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { push } from 'react-router-redux';
+
 import { Icon } from '../../../shared/components';
 import styles from './index.scss';
 
@@ -25,6 +29,12 @@ class Main extends Component {
             width,
             height
         });
+    }
+
+    componentDidCatch() {
+        const { pushDispatch } = this.props;
+        
+        pushDispatch('/login');
     }
 
     render() {
@@ -88,7 +98,14 @@ class Main extends Component {
 }
 
 Main.propTypes = {
-    children: PropTypes.element
+    children: PropTypes.element,
+    pushDispatch: PropTypes.func.isRequired
 };
 
-export default Main;
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({
+        pushDispatch: push
+    }, dispatch);
+}
+
+export default connect(null, mapDispatchToProps)(Main);

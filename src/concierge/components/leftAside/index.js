@@ -1,9 +1,11 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+
+import { TerminalInfo } from '../index';
 
 import { Icon, Button } from '../../../shared/components';
 
@@ -45,32 +47,14 @@ class Aside extends Component {
         const {
             localStream,
             remoteStream,
-            currentTerminal: {
-                mall: { title: mallName },
-                location,
-                name
-            }
+            currentTerminal
         } = this.props;
         const { pause } = this.state;
 
         return (
             <aside className='block16 left blue'>
                 <div className={styles.terminalInfo}>
-                    {name && (
-                        <Fragment>
-                            <span>{name}</span>
-                            <FormattedMessage
-                                id='LeftAside.terminalInfo.mall'
-                                defaultMessage={`Mall: {mall}`}
-                                values={{ mall: mallName }}
-                            />
-                            <FormattedMessage
-                                id='LeftAside.terminalInfo.location'
-                                defaultMessage={`Location: {location}`}
-                                values={{ location: location }}
-                            />
-                        </Fragment>
-                    )}
+                    <TerminalInfo terminal={currentTerminal} className={styles.terminalInfo} />
                 </div>
                 <div className={classNames({
                     [styles.myVideoContainer]: true,
@@ -130,23 +114,7 @@ Aside.propTypes = {
     localStream: PropTypes.shape({}),
     emitter: PropTypes.shape({}),
     remoteStream: PropTypes.shape({}),
-    currentTerminal: PropTypes.shape({
-        location: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        mall: PropTypes.shape({
-            title: PropTypes.string.isRequired
-        }).isRequired
-    }).isRequired
-};
-
-Aside.defaultProps = {
-    currentTerminal: {
-        location: '',
-        name: '',
-        mall: {
-            title: ''
-        }
-    }
+    currentTerminal: PropTypes.shape({})
 };
 
 function mapStoreToProps(store) {

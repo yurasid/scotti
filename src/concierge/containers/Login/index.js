@@ -49,8 +49,11 @@ class Login extends Component {
     }
 
     render() {
+        const { locale } = this.props;
+        
         return (
             <div
+                key={locale}
                 className={loginStyles.loginContainer}
                 onKeyPress={this.onEnterPress}
             >
@@ -73,9 +76,16 @@ class Login extends Component {
 }
 
 Login.propTypes = {
+    locale: PropTypes.string,
     history: PropTypes.shape({}).isRequired,
     submitDispatch: PropTypes.func.isRequired,
     loginDispatch: PropTypes.func.isRequired
+};
+
+const mapStateToProps = (store) => {
+    return {
+        locale: store.intl.locale
+    };
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -85,4 +95,4 @@ const mapDispatchToProps = (dispatch) => {
     }, dispatch);
 };
 
-export default connect(null, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
-import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -12,7 +12,7 @@ import classNames from 'classnames';
 import { setLocalStream, setCurrentFile, setRemoteStream } from '../../redux/actions/peerConnection';
 import { setCurrentTerminal } from '../../redux/actions/terminals';
 import { Ringing, Button } from '../../../shared/components';
-import { File } from '../';
+import { File, TerminalInfo } from '../';
 
 import styles from './index.scss';
 
@@ -147,30 +147,14 @@ class Video extends Component {
     render() {
         const {
             intl: { formatMessage },
-            currentTerminal: {
-                mall: { title: mallName },
-                location,
-                name
-            },
+            currentTerminal,
             currentPeer: { file }
         } = this.props;
         const { ready, shareButtonEnabled } = this.state;
 
         let element = (
             <div className={styles.container}>
-                <div className={styles.terminalInfo}>
-                    <span>{name}</span>
-                    <FormattedMessage
-                        id='Call.terminalInfo.mall'
-                        defaultMessage={`Mall: {mall}`}
-                        values={{ mall: mallName }}
-                    />
-                    <FormattedMessage
-                        id='Call.terminalInfo.location'
-                        defaultMessage={`Location: {location}`}
-                        values={{ location: location }}
-                    />
-                </div>
+                <TerminalInfo terminal={currentTerminal} className={styles.terminalInfo} />
                 <Ringing
                     icon='logodef'
                     color='#75df00'
@@ -278,23 +262,7 @@ Video.propTypes = {
     setCurrentFileDispatch: PropTypes.func.isRequired,
     pushDispatch: PropTypes.func.isRequired,
     intl: PropTypes.shape({}).isRequired,
-    currentTerminal: PropTypes.shape({
-        location: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        mall: PropTypes.shape({
-            title: PropTypes.string.isRequired
-        }).isRequired
-    }).isRequired
-};
-
-Video.defaultProps = {
-    currentTerminal: {
-        location: '',
-        name: '',
-        mall: {
-            title: ''
-        }
-    }
+    currentTerminal: PropTypes.shape({})
 };
 
 function mapStoreToProps(store) {

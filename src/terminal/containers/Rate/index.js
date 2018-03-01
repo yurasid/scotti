@@ -56,7 +56,6 @@ class Rate extends Component {
                 break;
             case 'stars':
                 if (typeof value === 'number') {
-                    console.log(value); // eslint-disable-line
                     newStep = step + 1;
                     (typeof callId !== 'undefined') && rateCallDispatch(callId, value);
                 }

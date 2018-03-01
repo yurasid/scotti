@@ -36,12 +36,12 @@ class LoaderComponent extends Component {
 
         return (
             <div
-                className={styles.busyContainer}
+                className={styles.container}
                 ref={container => this.container = container}
             >
                 <div className={styles.textBlock}>
                     <FormattedMessage
-                        id='Video.sorry'
+                        id='GlobalError.sorry'
                         defaultMessage='Sorry!'
                     >
                         {(txt) => (
@@ -55,8 +55,8 @@ class LoaderComponent extends Component {
                         )}
                     </FormattedMessage>
                     <FormattedMessage
-                        id='Video.noConcierge'
-                        defaultMessage='There is no concierge available at the moment'
+                        id='GlobalError.notAvailable'
+                        defaultMessage='The service is not available at the moment'
                     >
                         {(txt) => (
                             <span className={styles.subSpan}>
@@ -65,7 +65,7 @@ class LoaderComponent extends Component {
                         )}
                     </FormattedMessage>
                     <FormattedMessage
-                        id='Video.tryAgain'
+                        id='GlobalError.tryAgain'
                         defaultMessage='Please, try again in a few minutes'
                     >
                         {(txt) => (

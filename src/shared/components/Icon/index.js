@@ -26,6 +26,7 @@ import starempty from '../../images/icons/star-empty.svg';
 import starfull from '../../images/icons/star-full.svg';
 import finger from '../../images/icons/finger.svg';
 import shareimage from '../../images/icons/share-image.svg';
+import terminalslist from '../../images/icons/terminals-list.svg';
 
 import styles from './index.scss';
 
@@ -51,7 +52,8 @@ const icons = {
     starempty,
     starfull,
     finger,
-    shareimage
+    shareimage,
+    terminalslist
 };
 
 class IconComponent extends Component {

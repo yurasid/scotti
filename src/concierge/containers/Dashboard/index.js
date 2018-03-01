@@ -13,6 +13,7 @@ import { handleHttpError } from '../../../shared/utils/http';
 import { fetchCurrentTerminal } from '../../redux/actions/terminals';
 
 import { Footer, Header, MainContainer, Video, LeftAside } from '../../components/';
+import setCurrentPopup from '../../redux/actions/popup';
 
 import './index.global.scss';
 
@@ -53,7 +54,7 @@ class Home extends Component {
     }
 
     wantCallHandler = async (msg) => {
-        const { fetchCurrentTerminalDispatch } = this.props;
+        const { fetchCurrentTerminalDispatch, setCurrentPopupDispatch } = this.props;
         const { terminal_id } = msg;
 
         try {
@@ -61,7 +62,7 @@ class Home extends Component {
 
             this.setState({
                 showIncomingCall: true
-            });
+            }, () => setCurrentPopupDispatch(null));
         } catch (error) {
             console.log(error); // eslint-disable-line
         }
@@ -70,16 +71,33 @@ class Home extends Component {
     deinit = () => {
         const {
             setCurrentPeerDispatch,
-            currentPeer: { peer, emitter }
+            currentPeer: { peer }
         } = this.props;
 
-        if (emitter) {
-            emitter.removeAllListeners();
+        if (this.events) {
+            Object.keys(this.events).map((eventKey) => {
+                this.events[eventKey].remove();
+                delete this.events[eventKey];
+            });
         }
+
 
         peer && peer.close();
 
         setCurrentPeerDispatch(null);
+    }
+
+    reinitSockets = async () => {
+        const { currentPeer: { emitter } } = this.props;
+        const unauthenticatedError = new Error();
+        unauthenticatedError.code = 401;
+
+        try {
+            await handleHttpError(unauthenticatedError, '/api/concierge/refresh');
+            return emitter.initWS();
+        } catch (error) {
+            return console.error(error); // eslint-disable-line
+        }
     }
 
     init = async (props) => {
@@ -96,20 +114,11 @@ class Home extends Component {
             return initEmitterDispatch('concierge');
         }
 
-        emitter.addListener('want_call', this.wantCallHandler);
-        emitter.addListener('remote_stream', setRemoteStreamDispatch);
-        emitter.addListener('unauthenticated', async () => {
-            const { currentPeer: { emitter } } = this.props;
-            const unauthenticatedError = new Error();
-            unauthenticatedError.code = 401;
-
-            try {
-                await handleHttpError(unauthenticatedError, '/api/concierge/refresh');
-                return emitter.initWS();
-            } catch (error) {
-                return console.error(error); // eslint-disable-line
-            }
-        });
+        this.events = {
+            ['want_call']: emitter.addListener('want_call', this.wantCallHandler),
+            ['remote_stream']: emitter.addListener('remote_stream', setRemoteStreamDispatch),
+            ['unauthenticated']: emitter.addListener('unauthenticated', this.reinitSockets)
+        };
 
         const peerConnection = new PeerConnection(emitter);
 
@@ -197,7 +206,8 @@ Home.propTypes = {
     setRemoteStreamDispatch: PropTypes.func.isRequired,
     fetchCurrentUserDispatch: PropTypes.func.isRequired,
     fetchCurrentTerminalDispatch: PropTypes.func.isRequired,
-    currentUserLoadingStatusDispatch: PropTypes.func.isRequired
+    currentUserLoadingStatusDispatch: PropTypes.func.isRequired,
+    setCurrentPopupDispatch: PropTypes.func.isRequired
 };
 
 function mapStoreToProps(store) {
@@ -220,7 +230,8 @@ function mapDispatchToProps(dispatch) {
         fetchCurrentTerminalDispatch: fetchCurrentTerminal,
         logoutDispatch: logout,
         fetchCurrentUserDispatch: fetchCurrentUser,
-        currentUserLoadingStatusDispatch: currentUserLoadingStatus
+        currentUserLoadingStatusDispatch: currentUserLoadingStatus,
+        setCurrentPopupDispatch: setCurrentPopup
     }, dispatch);
 }
 

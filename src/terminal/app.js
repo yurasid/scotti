@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import { IntlProvider, addLocaleData } from 'react-intl';
+import { addLocaleData } from 'react-intl';
+import { Provider, connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { ConnectedRouter } from 'react-router-redux';
+import { updateIntl, IntlProvider } from 'react-intl-redux';
 
 import en from 'react-intl/locale-data/en';
 import fr from 'react-intl/locale-data/fr';
+
+import { store, history, setReducers } from '../shared/utils/store';
+import reducers from './redux/reducers';
 
 import Routes from './routes';
 
@@ -12,7 +20,7 @@ import {
     generateHttpOptions
 } from '../shared/utils/http';
 
-// require('./index.global.scss');
+setReducers(reducers);
 
 addLocaleData([...en, ...fr]);
 
@@ -20,22 +28,16 @@ const language = (navigator.languages && navigator.languages[0]) ||
     navigator.language ||
     navigator.userLanguage;
 
-class Root extends Component {
-    constructor() {
-        super();
-        this.state = {
-            messages: null,
-            locale: 'en'
-        };
-    }
-
+class RootComponent extends Component {
     getTranslations = async () => {
-        try { 
+        const { updateIntlDispatch } = this.props;
+        
+        try {
             const { messages, locale } = await localRequest(`/translations/${language}`, generateHttpOptions({
                 method: 'GET'
             }));
-    
-            return this.setState({
+
+            return updateIntlDispatch({
                 messages,
                 locale
             });
@@ -49,20 +51,32 @@ class Root extends Component {
     }
 
     render() {
-        const { messages, locale } = this.state;
-
-        /* <IntlProvider key={locale}> to force a full teardown until the underlying React context issue is resolved. */
-
         return (
-            <IntlProvider key={locale} locale={locale} messages={messages}>
-                <Routes />
+            <IntlProvider>
+                <ConnectedRouter history={history}>
+                    <Routes />
+                </ConnectedRouter>
             </IntlProvider>
         );
     }
 }
 
+RootComponent.propTypes = {
+    updateIntlDispatch: PropTypes.func.isRequired
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({
+        updateIntlDispatch: updateIntl
+    }, dispatch);
+};
+
+const Root = connect(null, mapDispatchToProps)(RootComponent);
+
 
 ReactDOM.render(
-    <Root />,
+    (<Provider store={store}>
+        <Root />
+    </Provider>),
     document.getElementById('root'),
 );

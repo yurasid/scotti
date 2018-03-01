@@ -38,6 +38,9 @@ footer {
     height: 80px;
     .block {
         padding-top: 16px;
+        &.left {
+            padding: 0;
+        }
     }
 }
 

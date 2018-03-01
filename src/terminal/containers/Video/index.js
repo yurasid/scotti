@@ -1,10 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
-
-import { initEmitter } from '../../redux/actions/peerConnection';
 
 import PeerConnection from '../../../shared/utils/peerConnection';
 import { Button, Loader } from '../../../shared/components/';
@@ -134,6 +131,12 @@ class Video extends Component {
             });
         });
 
+        emitter.addListener('concierge_offline', () => {
+            this.setState({
+                busy: true
+            });
+        });
+
         emitter.addListener('toggle_stream', ({ state }) => {
             this.setState({
                 onhold: state
@@ -166,15 +169,14 @@ class Video extends Component {
 
     init = async (props) => {
         const {
-            initEmitterDispatch,
             currentPeer: {
                 emitter,
                 creating
             }
         } = props || this.props;
 
-        if (!emitter) {
-            return !creating && initEmitterDispatch('terminal');
+        if (creating) {
+            return creating;
         }
 
         this.initEvents(emitter);
@@ -301,7 +303,6 @@ Video.propTypes = {
         creating: PropTypes.bool
     }),
     currentUserId: PropTypes.number.isRequired,
-    initEmitterDispatch: PropTypes.func.isRequired,
     intl: PropTypes.shape({}).isRequired
 };
 
@@ -316,10 +317,4 @@ function mapStoreToProps(store) {
     };
 }
 
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators({
-        initEmitterDispatch: initEmitter
-    }, dispatch);
-}
-
-export default connect(mapStoreToProps, mapDispatchToProps)(injectIntl(Video)); 
+export default connect(mapStoreToProps, null)(injectIntl(Video)); 

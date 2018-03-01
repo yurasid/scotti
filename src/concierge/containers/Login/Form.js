@@ -34,9 +34,9 @@ const LoginForm = ({
     submitting,
     error,
     clearSubmitErrors,
-    intl: { formatMessage }
+    intl: { formatMessage, locale }
 }) => (
-    <div className={styles.loginFormContainer}>
+    <div key={locale} className={styles.loginFormContainer}>
         <h1>
             <FormattedMessage
                 id='Login.headerText'
@@ -76,7 +76,7 @@ const LoginForm = ({
 
 LoginForm.propTypes = { ...propTypes };
 
-export default compose (
+export default compose(
     reduxForm({
         form: 'loginForm'
     }),

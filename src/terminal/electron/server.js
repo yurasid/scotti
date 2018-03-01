@@ -28,7 +28,7 @@ module.exports = function (electronApp) {
             try {
                 response = JSON.parse(await readFile(filePath, 'utf-8'));
             } catch (e) {
-                console.log(e); // eslint-disable-line no-console
+                response = e;
             }
 
             return response;

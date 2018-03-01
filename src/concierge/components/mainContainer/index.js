@@ -1,42 +1,42 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { injectIntl, defineMessages } from 'react-intl';
 
 import { MenuItem, Popup } from '../';
-import setCurrentPopup from '../../redux/actions/popup';
+import TerminalsList from '../listOfTerminals/';
 
 import styles from './index.scss';
 
 const messages = defineMessages({
-    menu1: {
+    storesLocation: {
         id: 'Dashboard.menu.storesLocation',
         defaultMessage: 'Stores Location'
     },
-    menu2: {
+    promotion: {
         id: 'Dashboard.menu.promotions',
         defaultMessage: 'Promotions'
     },
-    menu3: {
+    barsRestraunts: {
         id: 'Dashboard.menu.bars_restraunts',
         defaultMessage: 'Bars & Restaurants'
     },
-    menu4: {
+    emergency: {
         id: 'Dashboard.menu.emergency',
         defaultMessage: 'Emergency'
     }
 });
 
 const menu = [
-    { component: 'menu1', message: messages.menu1 },
-    { component: '', message: messages.menu2 },
-    { component: '', message: messages.menu3 },
-    { component: '', message: messages.menu4 }
+    { component: 'storesLocation', message: messages.storesLocation },
+    { component: '', message: messages.promotion },
+    { component: '', message: messages.barsRestraunts },
+    { component: '', message: messages.emergency }
 ];
 
 const components = {
-    menu1: (<div>Testing</div>)
+    storesLocation: (<div>Testing</div>),
+    terminalsList: TerminalsList
 };
 
 class MainContainer extends Component {
@@ -45,11 +45,10 @@ class MainContainer extends Component {
     }
 
     render() {
-        const { 
+        const {
             children,
-            currentPopup, 
-            setCurrentPopupDispatch,
-            intl: { formatMessage } 
+            intl: { formatMessage },
+            currentPopup
         } = this.props;
 
         const Component = currentPopup && components[currentPopup];
@@ -61,18 +60,19 @@ class MainContainer extends Component {
                         menu.map(menuItem => {
                             return (
                                 <MenuItem
-                                    active={menuItem.component === currentPopup}
+                                    name={menuItem.component}
                                     key={menuItem.message.id}
                                     text={formatMessage(menuItem.message)}
-                                    onClick={() => setCurrentPopupDispatch(menuItem.component)}
                                 />
                             );
                         })
                     }
                 </nav>
                 <div className={styles.container}>
-                    <Popup>
-                        {Component}
+                    <Popup
+                        noStyles={currentPopup === 'terminalsList'}
+                    >
+                        {typeof Component === 'function' ? <Component /> : Component}
                     </Popup>
                     {children}
                 </div>
@@ -83,9 +83,8 @@ class MainContainer extends Component {
 
 MainContainer.propTypes = {
     intl: PropTypes.shape({}).isRequired,
-    setCurrentPopupDispatch: PropTypes.func.isRequired,
-    currentPopup: PropTypes.string,
-    children: PropTypes.element
+    children: PropTypes.element,
+    currentPopup: PropTypes.string
 };
 
 function mapStoreToProps(store) {
@@ -94,10 +93,4 @@ function mapStoreToProps(store) {
     };
 }
 
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators({
-        setCurrentPopupDispatch: setCurrentPopup
-    }, dispatch);
-}
-
-export default connect(mapStoreToProps, mapDispatchToProps)(injectIntl(MainContainer));
+export default connect(mapStoreToProps)(injectIntl(MainContainer));

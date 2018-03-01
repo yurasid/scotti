@@ -12,6 +12,12 @@
     padding: 3vmin 3vmin 0;
     background-color: #ffffff;
 }
+
+.noStyles {
+  box-shadow: none;
+  padding: 0;
+}
+
 .close{
     position: relative;
     align-self: flex-end;

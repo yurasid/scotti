@@ -1,12 +1,29 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import PropTypes from 'prop-types';
+import { FormattedMessage, injectIntl, defineMessages } from 'react-intl';
 
 import CopyRight from './copyRight/';
 import { Icon } from '../../shared/components';
+import { MenuItem } from './';
 
-const Footer = () => (
+const messages = defineMessages({
+    terminalsList: {
+        id: 'Dashboard.terminalsList',
+        defaultMessage: 'Dashboard'
+    }
+});
+
+const Footer = ({ intl: { formatMessage } }) => (
     <footer>
-        <div className='block block16 left blue' />
+        <div className='block block16 left blue'>
+            <MenuItem
+                className='footerItem'
+                icon='terminalslist'
+                name='terminalsList'
+                key={messages.terminalsList.id}
+                text={formatMessage(messages.terminalsList)}
+            />
+        </div>
         <div className='block center'>
             <CopyRight color='#ebebeb' />
         </div>
@@ -25,4 +42,8 @@ const Footer = () => (
     </footer>
 );
 
-export default Footer;
+Footer.propTypes = {
+    intl: PropTypes.shape({}).isRequired
+};
+
+export default injectIntl(Footer);

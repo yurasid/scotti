@@ -7,6 +7,8 @@ import MainContainer from './mainContainer/';
 import Video from './video/';
 import LeftAside from './leftAside/';
 import File from './fileContainer/';
+import TerminalsList from './listOfTerminals/';
+import TerminalInfo from './terminalInfo/';
 
 export {
     CopyRight,
@@ -17,5 +19,7 @@ export {
     Popup,
     MainContainer,
     Video,
-    File
+    File,
+    TerminalsList,
+    TerminalInfo
 };

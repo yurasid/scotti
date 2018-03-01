@@ -32,6 +32,7 @@ class Emitter extends EventEmitter {
                 case 'busy':
                 case 'ready_call':
                 case 'hang_up':
+                case 'concierge_offline':
                     this.emit(msg.type);
                     break;
                 case 'offer':
@@ -40,7 +41,11 @@ class Emitter extends EventEmitter {
                 case 'call_started':
                 case 'want_call':
                 case 'toggle_stream':
+                case 'terminal_disconnected':
                     this.emit(msg.type, msg);
+                    break;
+                case 'terminal_connected':
+                    this.emit(msg.type, msg, true);
                     break;
                 case 'unauthenticated':
                     this.emit('unauthenticated');

@@ -101,7 +101,7 @@
     display: flex;
     flex-direction: column;
     height: 10vmin;
-    & > span {
+    span {
         font-family: 'Open Sans';
         font-size: 1.5vmin;
         font-weight: normal;
@@ -114,7 +114,7 @@
 
     }
 
-    & > span:first-child {
+    & > span {
         font-size: 2.2vmin;
         line-height: 1.67;
         font-weight: bold;

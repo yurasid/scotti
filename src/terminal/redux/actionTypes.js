@@ -1,2 +1,3 @@
 export const CURRENT_USER_FETCHED = 'CURRENT_USER_FETCHED';
 export const RATE_CALL = 'RATE_CALL';
+export const UPDATE_RETRIES = 'UPDATE_RETRIES';

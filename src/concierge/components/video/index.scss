@@ -63,7 +63,7 @@
     left: 3vmin;
     display: flex;
     flex-direction: column;
-    & > span {
+    span {
         font-family: 'Open Sans';
         font-size: 2vmin;
         font-weight: normal;
@@ -73,10 +73,9 @@
         letter-spacing: normal;
         text-align: left;
         color: #ffffff;
-
     }
 
-    & > span:first-child {
+    & > span {
         font-size:4vmin;
         font-weight: bold;
     }
