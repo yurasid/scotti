@@ -27,7 +27,7 @@ module.exports = function (electronApp) {
             try {
                 response = JSON.parse(await readFile(filePath, 'utf-8'));
             } catch (e) {
-                response = e;
+                throw e;
             }
 
             return response;

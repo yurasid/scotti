@@ -18,7 +18,7 @@ function createWindow() {
         height: 600,
         show: false,
         maximizable: false,
-        minimizable: false,
+        resizable: false,
         title: 'Concierge App',
         autoHideMenuBar: true,
         icon: path.resolve(__dirname, platform === 'win32' ? './icons/win/icon.ico' : './icons/png/64.png')
