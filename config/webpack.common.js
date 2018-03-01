@@ -20,8 +20,8 @@ const defConfig = {
         new WebpackShellPlugin({
             onBuildStart: ['echo "Webpack Start"'],
             onBuildEnd: [
-                './node_modules/.bin/electron-icon-maker --input=./src/concierge/icon.png --output=./dist/concierge',
-                './node_modules/.bin/babel-node ./scripts/translate.js',
+                `${path.resolve(__dirname, '../node_modules/.bin/electron-icon-maker')} --input=${path.resolve(__dirname, '../src/concierge/icon.png')} --output=${path.resolve(__dirname, '../dist/concierge')}`,
+                `${path.resolve(__dirname, '../node_modules/.bin/babel-node')} ${path.resolve(__dirname, '../scripts/translate.js')}`,
                 'echo "Webpack End"'
             ]
         }),
