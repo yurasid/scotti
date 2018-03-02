@@ -1,0 +1,163 @@
+.mainContainer {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    align-self: stretch;
+    box-sizing: border-box;
+    width: 70vmin;
+}
+
+.mainVideo {
+    display: flex;
+    flex-grow: 1;
+    align-self: stretch;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: center;
+    & > video {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.myVideo {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 150%;
+    background-color: #474747;
+    border: solid 2px #c8c8c8;
+    border-radius: 10%;
+    width: 100%;
+    & > * {
+        display: block;
+        position: absolute;
+        z-index: 0;
+        width: auto;
+        height: 100%;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+    }
+    & > video {
+        object-fit: cover;
+        left: 50%;
+        transform: translateX(-50%) scaleX(-1);
+    }
+    & > div {    
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;    
+        margin: 0 1.2vmin;
+        & > span {
+            font-family: 'Open Sans';
+            font-size: calc(10px + .5vmin) ;
+            line-height: 1.43;
+            text-align: center;
+            color: #ffffff;
+        }
+    }
+}
+
+.controlContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0 2vmin;
+    box-sizing: border-box;
+    div:not(:last-child) {
+        margin-bottom: 2vmin;
+    }
+}
+
+.button {
+    padding: 5% 0;
+    box-shadow: 0 1px 2px 0 #c8c8c8;
+    box-sizing: border-box;
+    border-radius: 10%;
+    width: 100%;
+}
+
+.busyContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    align-self: stretch;
+    margin: 40% 25% 10%;
+    height: 100%;
+}
+
+.holdOnContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    align-self: stretch;
+    margin: 40% 10%;
+    height: 100%;
+}
+
+.textBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    & > span {
+        margin-bottom: 4vmin;
+    }
+}
+
+.mainSpan, .subSpan {
+    text-align: center;
+    color: #009bf5;
+    font-family: 'Open Sans';
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+}
+
+.green {
+    color: #75df00;
+}
+
+.mainSpan {
+  font-size: 7vw;
+  line-height: 1.11;
+}
+
+.subSpan {
+  font-size: 3vw;
+  line-height: 1;
+}
+
+.connectingIco {
+    margin-bottom: 6vmin;
+}
+
+.picture {
+    height: 30vw;
+    width: 30vw;
+    position: absolute;
+    left: 6vw;
+    top: 50%;
+
+    background-color: rgba($color: #f5f5f5, $alpha: .5);
+    box-shadow: 0 1px 2px 0 #c8c8c8;
+
+    padding: 4vw;
+    border-radius: 5%;
+    
+    & > img {
+        border-radius: 5%;
+        height: 100%;
+        width: 100%;
+    }
+}

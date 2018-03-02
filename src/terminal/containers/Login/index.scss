@@ -1,0 +1,59 @@
+.loginContainer {
+    span {
+        color: #ffffff;
+    }
+
+    background-color: rgb(0, 155, 245);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding-bottom: 20%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    align-self: stretch;
+    margin: 40% 15% 10%;
+    height: 100%;
+}
+
+.textBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    & > span {
+        margin-bottom: 4vmin;
+    }
+}
+
+.mainSpan, .subSpan {
+    text-align: center;
+    color: #009bf5;
+    font-family: 'Open Sans';
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+}
+
+.green {
+    color: #75df00;
+}
+
+.mainSpan {
+    font-size: 7vw;
+    line-height: 1.11;
+}
+  
+.subSpan {
+    font-size: 3vw;
+    line-height: 1;
+}

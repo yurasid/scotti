@@ -1,14 +1,47 @@
 {
-  "plugins": ["transform-object-rest-spread", "react-hot-loader/babel", "transform-function-bind"],
+  "plugins": [
+    [
+      "react-intl",
+      {
+        "messagesDir": "./dist/messages/"
+      }
+    ],
+    "transform-es2015-modules-commonjs",
+    "transform-object-rest-spread",
+    "transform-class-properties",
+    [
+      "transform-es2015-classes",
+      {
+        "loose": true
+      }
+    ]
+  ],
   "env": {
     "test": {
-      "presets": ["env", "react", "es2017"]
+      "presets": [
+        "env",
+        "react",
+        "es2017"
+      ]
     },
     "development": {
-      "presets": [["env", { "modules": false }], "react", "es2017"]
+      "presets": [
+        [
+          "env",
+          {
+            "modules": false
+          }
+        ],
+        "react",
+        "es2017"
+      ]
     },
     "production": {
-      "presets": ["env", "react", "es2017"]
+      "presets": [
+        "env",
+        "react",
+        "es2017"
+      ]
     }
   }
 }

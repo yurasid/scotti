@@ -1,0 +1,58 @@
+.container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ebebeb;
+    margin: 0 15vmin;
+}
+
+.innerContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    align-self: stretch;
+    margin: 40% 15% 3%;
+    height: 100%;
+}
+
+.textBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    & > span {
+        margin-bottom: 4vmin;
+    }
+}
+
+.mainSpan, .subSpan {
+    text-align: center;
+    color: #009bf5;
+    font-family: 'Open Sans';
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+}
+
+.mainSpan {
+    font-size: 7vw;
+    line-height: 1.11;
+    font-weight: 600;
+}
+  
+.subSpan {
+    font-size: 3vw;
+    line-height: 1;
+    font-weight: 300;
+}
+
+.green {
+    color: #75df00;
+    font-size: 4vw;
+    font-weight: 400;
+}

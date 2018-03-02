@@ -1,0 +1,43 @@
+{
+  "build": {
+    "appId": "concierge",
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "pacman"
+      ],
+      "icon": "./icons/png",
+      "maintainer": "SharpMinds"
+    },
+    "win": {
+      "target": [
+        "msi"
+      ],
+      "icon": "./icons/win/icon.ico"
+    }
+  },
+  "name": "concierge",
+  "version": "1.0.0",
+  "description": "Concierge Electron application",
+  "main": "index.js",
+  "email": "sstepaniuk@sharpminds.com",
+  "homepage": "https://gitlab.com/soundstorm_ua/scotti_project/blob/master/src/concierge/containers/Login/index.js",
+  "scripts": {
+    "postinstall": "install-app-deps",
+    "start": "npm install && electron .",
+    "pack": "build --dir",
+    "dist": "build"
+  },
+  "author": "SharpMinds",
+  "dependencies": {
+    "glob": "7.1.2",
+    "body-parser": "1.18.2",
+    "express": "4.16.2",
+    "express-http-proxy": "1.1.0"
+  },
+  "devDependencies": {
+    "electron": "1.8.2-beta.3",
+    "electron-builder": "19.55.2"
+  }
+}

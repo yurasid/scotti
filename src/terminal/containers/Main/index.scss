@@ -1,0 +1,61 @@
+.headerBlock {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 70vmin;
+}
+
+.headerLeftBlock, .iconContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
+    flex: 1;
+}
+
+.headerLeftBlock {
+    padding-left: .2vmin;
+    align-items: flex-start;
+}
+
+.iconContainer {
+    align-items: flex-end;
+}
+
+.headerSpan {
+    font-family: 'Omnes Pro';
+    font-size: 3vw;
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.36;
+    letter-spacing: 3vw;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.headerFirstSpan {
+    @extend .headerSpan;
+    font-style: italic;
+    color: #75df00;
+}
+
+.headerSecondSpan {
+    @extend .headerSpan;
+    color: #0481c8;
+}
+
+.footerSpan {
+    font-family: 'Open Sans';
+    font-size: 2.5vw;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: 1vw;
+    text-align: center;
+    color: #8b8b8b;
+    padding-top: 1vmin;
+}
+
+.iconContainer {
+    align-self: stretch;
+}

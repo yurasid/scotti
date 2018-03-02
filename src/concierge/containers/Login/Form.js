@@ -1,9 +1,15 @@
 import React from 'react';
+import { compose } from 'redux';
 import { Field, reduxForm, propTypes } from 'redux-form';
-import { Input } from '../../../shared/components';
-import { required, maxLength, minLength } from '../../../shared/validation';
+import { injectIntl, FormattedMessage, defineMessages } from 'react-intl';
 
-import loginStyles from './index.scss';
+import { required as requiredCreator, maxLength, minLength } from '../../../shared/utils/validation';
+
+import { Input } from '../../../shared/components';
+
+import styles from './index.scss';
+
+const required = requiredCreator();
 
 const maxLength15 = maxLength(15);
 const minLength4 = minLength(4);
@@ -12,26 +18,67 @@ const renderField = (props) => (
     <Input {...props} />
 );
 
-const LoginForm = ({ handleSubmit, submitting }) => (
-    <div className={loginStyles.loginFormContainer}>
-        <h1>Login</h1>
-        <form className={loginStyles.loginForm} onSubmit={handleSubmit}>
+const messages = defineMessages({
+    username: {
+        id: 'Login.usernameLabel',
+        defaultMessage: 'Username'
+    },
+    password: {
+        id: 'Login.passwordLabel',
+        defaultMessage: 'Password'
+    }
+});
+
+const LoginForm = ({
+    handleSubmit,
+    submitting,
+    error,
+    clearSubmitErrors,
+    intl: { formatMessage, locale }
+}) => (
+    <div key={locale} className={styles.loginFormContainer}>
+        <h1>
+            <FormattedMessage
+                id='Login.headerText'
+                defaultMessage='Login'
+            />
+        </h1>
+        <form className={styles.loginForm} onSubmit={handleSubmit} onFocus={() => {
+            return error && clearSubmitErrors();
+        }}>
+            {error && <span className={styles.formError}>
+                {error.id ? (
+                    <FormattedMessage {...error} />
+                ) : error}
+            </span>}
             <Field name='username' type='text'
-                component={renderField} label='Username'
+                component={renderField} label={formatMessage(messages.username)}
                 validate={[required, maxLength15, minLength4]}
-                className={loginStyles.formRow} icon={true}
+                className={styles.formRow} icon={true}
             />
             <Field name='password' type='password'
-                component={renderField} label='Password'
-                validate={[required]} icon={true}
+                component={renderField} label={formatMessage(messages.password)}
+                validate={[required]} icon={true} autocomplete='current-password'
             />
-            <button type='submit' disabled={submitting} className={loginStyles.submitButton}>Get Started</button>
+            <button
+                type='submit'
+                disabled={submitting}
+                className={styles.submitButton}
+            >
+                <FormattedMessage
+                    id='Login.btnGetStarted'
+                    defaultMessage='Get Started'
+                />
+            </button>
         </form>
     </div>
 );
 
 LoginForm.propTypes = { ...propTypes };
 
-export default reduxForm({
-    form: 'loginForm'
-})(LoginForm);
+export default compose(
+    reduxForm({
+        form: 'loginForm'
+    }),
+    injectIntl,
+)(LoginForm);

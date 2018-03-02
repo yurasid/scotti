@@ -38,35 +38,34 @@ footer {
     height: 80px;
     .block {
         padding-top: 16px;
+        &.left {
+            padding: 0;
+        }
     }
 }
 
 section, main {
     display: flex;
-    flex-direction: row;
-    flex: 1 0 auto;
+    background-color: transparent;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
 }
 
 .block {
     flex-direction: row;
     justify-content: center;
-    &.left {
-        align-self: flex-start;
-    }
-    &.left {
-        align-self: flex-end;
-    }
 }
 
 .block.block16, .block16 {
-    max-width: 320px;
-    min-width: 275px;
+    max-width: 400px;
+    min-width: 355px;
     flex: 1 0 16%;
 }
 
 .center {
     min-width: 645px;
-    flex: 1 0 68%;
+    flex: 1 0 60%;
 }
 
 aside, .block {

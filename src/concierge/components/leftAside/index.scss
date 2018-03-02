@@ -1,0 +1,122 @@
+.myVideoContainer {
+    background-color: #595959;
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 150%;
+
+    & > * {
+        display: block;
+        position: absolute;
+        z-index: 0;
+        width: auto;
+        height: 100%;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+}
+
+.withVideo {
+    background-color: #ffffff;
+}
+
+.fullSizeInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-left: 2vmin;
+    padding-right: 2vmin;
+    & > span:last-child {
+        font-family: 'Open Sans';
+        font-size: calc(12px + .5vmin);
+        line-height: 1.5;
+        text-align: center;
+        color: #ffffff;
+        margin-top: 4vmin;
+    }
+}
+
+.noSession {
+    @extend .fullSizeInfo;
+}
+
+.myVideo {
+    height: auto;
+    overflow: hidden;
+    left: 2vmin;
+    right: 2vmin;
+    top: 4vmin;
+    bottom: 4vmin;
+
+    & > * {
+        display: block;
+        position: absolute;
+        z-index: 0;
+        width: auto;
+        height: 100%;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+
+    & > video {
+        object-fit: cover;
+        left: 50%;
+        transform: translateX(-50%) scaleX(-1);
+        margin: auto;
+    }
+}
+
+.overlay {
+    @extend .fullSizeInfo;
+    & > * {
+        z-index: 1;
+    }
+    &:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        background-color: #000000;
+        opacity: .5;
+        z-index: 0;
+    }
+}
+
+.button {
+    position: absolute;
+    bottom: 2vmin;
+    right: 2.5vmin;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 1px 2px 0 #c8c8c8; 
+}
+
+.terminalInfo {
+    display: flex;
+    flex-direction: column;
+    height: 10vmin;
+    span {
+        font-family: 'Open Sans';
+        font-size: 1.5vmin;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        text-align: left;
+        color: #595959;
+
+    }
+
+    & > span {
+        font-size: 2.2vmin;
+        line-height: 1.67;
+        font-weight: bold;
+    }
+}

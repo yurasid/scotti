@@ -5,7 +5,9 @@
     "jest": true,
     "node": true
   },
+  "parser": "babel-eslint",
   "extends": [
+    "airbnb-base",
     "eslint:recommended",
     "plugin:react/recommended"
   ],
@@ -22,6 +24,7 @@
     "babel"
   ],
   "rules": {
+    "import/no-extraneous-dependencies": false,
     "jsx-quotes": [
       "error",
       "prefer-single"
@@ -32,10 +35,6 @@
       {
         "SwitchCase": 1
       }
-    ],
-    "linebreak-style": [
-      "error",
-      "unix"
     ],
     "quotes": [
       "error",

@@ -1,10 +1,13 @@
-import { SET_CURRENT_USER } from '../actionTypes';
+import { CURRENT_USER_FETCHED, CURRENT_USER_LOADING } from '../actionTypes';
 
-export const initialState = {};
+export const initialState = {
+    loading: false
+};
 
 export default function (state = initialState, action) {
     switch (action.type) {
-        case SET_CURRENT_USER: {
+        case CURRENT_USER_FETCHED:
+        case CURRENT_USER_LOADING: {
             return {
                 ...state,
                 ...action.payload

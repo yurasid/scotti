@@ -1,0 +1,40 @@
+.terminalInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.infoLine span {
+    margin-left: .5vmin;
+    &.notActive, &.standBy {
+        position: relative;
+        &::after {
+            content: '';
+            position: absolute;
+            left: 107%;
+            top: 50%;
+            width: .4vmin;
+            height: .4vmin;
+            transform: translate3d(0, -35%, 0);
+            border-radius: 50%;
+            overflow: hidden;
+            z-index:1;
+        }
+    }
+    &.notActive {
+        color: #e16950;
+        &:after {
+            background-color: #e16950;
+            border: 1px solid #e16950;
+        }
+    }
+    &.standBy {
+        color: #0481c8;
+        &:after {
+            background-color: #0481c8;
+            border: 1px solid #0481c8;
+        }
+    }
+    &:first-child {
+        margin-left: 0;
+    }
+}

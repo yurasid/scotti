@@ -1,0 +1,35 @@
+.button {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    span:first-child {
+        max-width: 100%;
+        & > svg {
+            max-width: 100%;
+        }
+    }
+}
+
+.textSpan {
+    font-family: 'Open Sans';
+    font-size: 18px;
+    text-align: center;
+    width: 100%;
+    color: #999999;
+}
+
+.disabled {
+    box-shadow: none;
+    position: relative;
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-color: rgba($color: #ffffff, $alpha: .75);
+    }
+}

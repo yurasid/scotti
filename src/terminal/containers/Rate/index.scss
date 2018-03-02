@@ -1,0 +1,119 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    align-self: stretch;
+    width: 100%;
+    margin: 5% 20% 0;
+
+}
+
+.innerContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.mainSpan {
+  font-family: 'Open Sans';
+  font-size: 7vw;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.11;
+  letter-spacing: normal;
+  text-align: center;
+  color: #75df00;
+}
+
+.subSpan {
+    font-family: 'Open Sans';
+    font-size: 4vw;
+    font-weight: 300;
+    line-height: 1.33;
+    text-align: center;
+    color: #0481c8;
+    margin: 4vmin 0 7vmin;
+}
+
+.buttonsContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 5% 2vmin;
+    height: 10.5vmin;
+}
+
+.logout {
+    height: 7vmin;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    align-self: stretch;
+}
+
+.button {
+    box-sizing: border-box;
+    height: 100%;
+}
+
+.buttonInContainer {
+    width: 30%;
+    flex-grow: 0;
+    box-shadow: 0 1px 2px 0 #c8c8c8;
+    border-radius: 10%;
+    overflow: hidden;
+    position: relative;
+    & > span {
+        font-family: 'Open Sans';
+        font-size: 4vw;
+        font-weight: 600;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: 1;
+        letter-spacing: normal;
+        text-align: center;
+        color: #ffffff;
+    }
+}
+
+.stars {
+    justify-content: center;
+    & > span {
+        counter-reset: my-badass-counter;
+        & > span {
+            padding-bottom: 3.5vw;
+            &:before {
+                content: counter(my-badass-counter);
+                counter-increment: my-badass-counter;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 2.5vw;
+                font-family: 'Open Sans';
+                color: #45b5f2;
+            }
+        }
+    }
+}
+
+.up, .down {
+    align-self: stretch;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 0 2vw;
+}
+
+.up {
+    padding-bottom: .6vw;
+    transform: scaleX(-1);
+}
+
+.down {
+    transform: scaleY(-1);
+}

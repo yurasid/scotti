@@ -1,79 +1,238 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
-import { Icon } from '../../../shared/components';
-import CopyRight from '../../components/copyRight/';
-import UserInfo from '../../components/useInfo';
-import MenuItem from '../../components/menuItem';
+import { fetchCurrentUser, currentUserLoadingStatus } from '../../redux/actions/user';
+import { logout } from '../../redux/actions/auth';
+import { setCurrentPeer, setRemoteStream, initEmitter, setCurrentEmitter } from '../../redux/actions/peerConnection';
+
+import PeerConnection from '../../../shared/utils/peerConnection';
+import { handleHttpError } from '../../../shared/utils/http';
+import { fetchCurrentTerminal } from '../../redux/actions/terminals';
+
+import { Footer, Header, MainContainer, Video, LeftAside } from '../../components/';
+import setCurrentPopup from '../../redux/actions/popup';
 
 import './index.global.scss';
-import { history } from '../../utils/store';
 
 class Home extends Component {
-    handlerLogout() {
-        window.sessionStorage.removeItem('authToken');
+    constructor() {
+        super();
+
+        this.state = {
+            showIncomingCall: false
+        };
+    }
+
+    handlerLogout = async () => {
+        const { history, logoutDispatch } = this.props;
+
+        await logoutDispatch();
+
         history.push('/');
     }
-    componentWillMount () {
-        this.handlerLogout = ::this.handlerLogout;
+
+    checkCurrentUser = async () => {
+        const {
+            currentUser,
+            fetchCurrentUserDispatch,
+            currentUserLoadingStatusDispatch,
+            history
+        } = this.props;
+
+        if (!currentUser || (!currentUser.id && !currentUser.loading)) {
+            try {
+                currentUserLoadingStatusDispatch(true);
+                return await fetchCurrentUserDispatch();
+            } catch (error) {
+                currentUserLoadingStatusDispatch();
+                history.push('/login');
+            }
+        }
     }
+
+    wantCallHandler = async (msg) => {
+        const { fetchCurrentTerminalDispatch, setCurrentPopupDispatch } = this.props;
+        const { terminal_id } = msg;
+
+        try {
+            await fetchCurrentTerminalDispatch(terminal_id);
+
+            this.setState({
+                showIncomingCall: true
+            }, () => setCurrentPopupDispatch(null));
+        } catch (error) {
+            console.log(error); // eslint-disable-line
+        }
+    }
+
+    deinit = () => {
+        const {
+            setCurrentPeerDispatch,
+            currentPeer: { peer }
+        } = this.props;
+
+        if (this.events) {
+            Object.keys(this.events).map((eventKey) => {
+                this.events[eventKey].remove();
+                delete this.events[eventKey];
+            });
+        }
+
+
+        peer && peer.close();
+
+        setCurrentPeerDispatch(null);
+    }
+
+    reinitSockets = async () => {
+        const { currentPeer: { emitter } } = this.props;
+        const unauthenticatedError = new Error();
+        unauthenticatedError.code = 401;
+
+        try {
+            await handleHttpError(unauthenticatedError, '/api/concierge/refresh');
+            return emitter.initWS();
+        } catch (error) {
+            return console.error(error); // eslint-disable-line
+        }
+    }
+
+    init = async (props) => {
+        const {
+            currentPeer: {
+                emitter
+            },
+            setCurrentPeerDispatch,
+            setRemoteStreamDispatch,
+            initEmitterDispatch
+        } = props || this.props;
+
+        if (!emitter) {
+            return initEmitterDispatch('concierge');
+        }
+
+        this.events = {
+            ['want_call']: emitter.addListener('want_call', this.wantCallHandler),
+            ['remote_stream']: emitter.addListener('remote_stream', setRemoteStreamDispatch),
+            ['unauthenticated']: emitter.addListener('unauthenticated', this.reinitSockets)
+        };
+
+        const peerConnection = new PeerConnection(emitter);
+
+        setCurrentPeerDispatch(peerConnection);
+    }
+
+    componentWillMount() {
+        this.checkCurrentUser()
+            .then(() => {
+                const { currentPeer: { peer, creating }, currentUser: { id } } = this.props;
+
+                !creating && !peer && id && this.init();
+            });
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const { currentPeer: { peer, creating }, currentUser: { id } } = nextProps;
+
+        !creating && !peer && id && this.init(nextProps);
+    }
+
+    componentWillUnmount() {
+        this.deinit();
+
+        const {
+            setCurrentEmitterDispatch,
+            currentPeer: { emitter }
+        } = this.props;
+
+        emitter && emitter.close() && setCurrentEmitterDispatch(null);
+    }
+
     render() {
+        const { showIncomingCall } = this.state;
+
         return (
             <Fragment>
-                <header>
-                    <div className='block block16 left userInfo'>
-                        <UserInfo />
-                    </div>
-                    <div className='block logo center'>
-                        <Icon name='logodef' />
-                    </div>
-                    <div className='block block16 right'>
-                        <div className='logout' onClick={this.handlerLogout}>
-                            <span>Logout</span>
-                            <Icon name='logout' />
-                        </div>
-                    </div>
-                </header>
+                <Header handlerLogout={this.handlerLogout} />
                 <main>
-                    <aside className='block16 left blue'>Left</aside>
-                    <section className='mainContent center'>
-                        <nav>
-                            <MenuItem text='stores location' />
-                            <MenuItem text='promotions' />
-                            <MenuItem text='bars & restaurants' />
-                            <MenuItem text='emergency' />
-                        </nav>
-                        <div>Video call component</div>
-                    </section>
+                    <LeftAside />
+                    <MainContainer>
+                        {showIncomingCall ? <Video /> : <Fragment />}
+                    </MainContainer>
                     <aside className='block16 right blue'>
-                        <h2>User links</h2>
+                        <h2>
+                            <FormattedMessage
+                                id='Dashboard.userLinks'
+                                defaultMessage='User links'
+                            />
+                        </h2>
                         <ul className='usableLinks'>
-                            <li><a target="_blank" href='https://www.google.com'>www.usable.link.info</a></li>
+                            <li>
+                                <a
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    href='https://www.google.com'
+                                >
+                                    www.usable.link.info
+                                </a>
+                            </li>
                         </ul>
                     </aside>
                 </main>
-                <footer>
-                    <div className='block block16 left blue tech-support'>
-                        <Icon name='tech' />
-                        <div>
-                            <span>tech support</span>
-                            <span>818-402-0605</span>
-                        </div>
-                    </div>
-                    <div className='block center'>
-                        <CopyRight color='#ebebeb' />
-                    </div>
-                    <div className='block block16 right blue' />
-                </footer>
+                <Footer />
             </Fragment>
         );
     }
 }
 
 Home.propTypes = {
-    history: PropTypes.shape({}).isRequired
+    intl: PropTypes.shape({}).isRequired,
+    currentPeer: PropTypes.shape({
+        peer: PropTypes.shape({}),
+        emitter: PropTypes.shape({}),
+        creating: PropTypes.bool
+    }),
+    currentUser: PropTypes.shape({
+        id: PropTypes.number,
+        loading: PropTypes.bool,
+    }).isRequired,
+    logoutDispatch: PropTypes.func.isRequired,
+    initEmitterDispatch: PropTypes.func.isRequired,
+    setCurrentEmitterDispatch: PropTypes.func.isRequired,
+    setCurrentPeerDispatch: PropTypes.func.isRequired,
+    setRemoteStreamDispatch: PropTypes.func.isRequired,
+    fetchCurrentUserDispatch: PropTypes.func.isRequired,
+    fetchCurrentTerminalDispatch: PropTypes.func.isRequired,
+    currentUserLoadingStatusDispatch: PropTypes.func.isRequired,
+    setCurrentPopupDispatch: PropTypes.func.isRequired
 };
 
+function mapStoreToProps(store) {
+    return {
+        currentUser: store.currentUser,
+        currentPeer: {
+            peer: store.currentPeer.peer,
+            emitter: store.currentPeer.emitter,
+            creating: store.currentPeer.creating
+        }
+    };
+}
 
-export default connect()(Home);
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({
+        setCurrentPeerDispatch: setCurrentPeer,
+        initEmitterDispatch: initEmitter,
+        setCurrentEmitterDispatch: setCurrentEmitter,
+        setRemoteStreamDispatch: setRemoteStream,
+        fetchCurrentTerminalDispatch: fetchCurrentTerminal,
+        logoutDispatch: logout,
+        fetchCurrentUserDispatch: fetchCurrentUser,
+        currentUserLoadingStatusDispatch: currentUserLoadingStatus,
+        setCurrentPopupDispatch: setCurrentPopup
+    }, dispatch);
+}
+
+export default connect(mapStoreToProps, mapDispatchToProps)(injectIntl(Home));
