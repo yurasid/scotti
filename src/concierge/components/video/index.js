@@ -28,7 +28,7 @@ class Video extends Component {
         super();
 
         this.state = {
-            audio: false,
+            audio: true,
             video: true,
             ready: false,
             shareButtonEnabled: false

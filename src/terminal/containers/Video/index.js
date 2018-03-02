@@ -31,7 +31,7 @@ class Video extends Component {
         super();
 
         this.state = {
-            audio: false,
+            audio: true,
             video: true,
             error: null,
             remoteStream: null,
