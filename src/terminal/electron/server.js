@@ -17,20 +17,20 @@ module.exports = function (electronApp) {
 
     app.use(express.static(path.resolve(__dirname)));
 
-    app.use('/api/login', proxy(CONSTANTS.BACKEND_URL, {
+    app.use('/api/terminal/login', proxy(CONSTANTS.BACKEND_URL, {
         preservHostHdr: true,
-        proxyReqPathResolver: req => req.url,
-        proxyReqBodyDecorator: async () => {
+        proxyReqPathResolver: req => `${req.url}terminal/login`,
+        proxyReqBodyDecorator: async (reqBody) => {
             const filePath = path.resolve(electronApp.getPath('userData'), 'user.json');
-            let response = {};
+            let body = {};
 
             try {
-                response = JSON.parse(await readFile(filePath, 'utf-8'));
+                body = JSON.parse(await readFile(filePath, 'utf-8'));
             } catch (e) {
                 throw e;
             }
 
-            return response;
+            return JSON.stringify(Object.assign({}, reqBody, body));
         }
     }));
 
