@@ -10,7 +10,8 @@ function createWindow () {
     require('./server.js')(app);
     mainWindow = new BrowserWindow({
         width: 600, 
-        height: 900
+        height: 900,
+        kiosk: true
     });
 
     mainWindow.loadURL('http://localhost:9001/');
