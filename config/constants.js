@@ -6,6 +6,7 @@ const MESSAGES_DIR = path.resolve(DIST, './messages');
 const BACKEND_IP = '45.77.138.235';
 
 module.exports = {
+    BACKEND_IP,
     BACKEND_SOCKET_URL: `ws://${BACKEND_IP}:6001`,
 
     SRC: SRC,

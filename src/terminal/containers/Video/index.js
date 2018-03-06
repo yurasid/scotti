@@ -60,9 +60,13 @@ class Video extends Component {
     }
 
     gotremoteStream = (stream) => {
-        this.setState({
-            remoteStream: stream
-        }, this.setRemoteVideostream);
+        const { remoteStream } = this.state;
+
+        if (remoteStream !== stream) {
+            this.setState({
+                remoteStream: stream
+            }, this.setRemoteVideostream);
+        }
     }
 
     start() {
@@ -206,7 +210,7 @@ class Video extends Component {
     componentWillReceiveProps(nextProps) {
         const { currentPeer: { error } } = nextProps;
 
-        if (error)  {
+        if (error) {
             throw error;
         }
 
