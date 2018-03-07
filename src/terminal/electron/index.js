@@ -11,10 +11,16 @@ function createWindow () {
     mainWindow = new BrowserWindow({
         width: 600, 
         height: 900,
-        kiosk: true
+        kiosk: true,
+        show: false
     });
 
     mainWindow.loadURL('http://localhost:9001/');
+
+    mainWindow.once('ready-to-show', function() {
+        mainWindow.show();
+        mainWindow.openDevTools();
+    });
 
     mainWindow.on('closed', function () {
         mainWindow = null;

@@ -10,7 +10,6 @@ class Emitter extends EventEmitter {
 
     initWS = async () => {
         if (this.ws) {
-            this.ws.onclose = function () { };
             this.ws.close();
         }
 
@@ -20,6 +19,10 @@ class Emitter extends EventEmitter {
 
                 socket.onopen = () => resolve(socket);
                 socket.onerror = reject;
+
+                socket.onclose = (error) => {
+                    console.error(error); //eslint-disable-line
+                };
             });
         } catch (error) {
             throw error;
@@ -70,7 +73,6 @@ class Emitter extends EventEmitter {
 
     close = () => {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            this.ws.onclose = function () { };
             this.ws.close();
         }
 
