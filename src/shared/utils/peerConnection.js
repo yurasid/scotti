@@ -1,5 +1,6 @@
-require('webrtc-adapter');
+import { BACKEND_IP } from '../../../config/constants';
 
+require('webrtc-adapter');
 
 function errorHandler(context) {
     return function (error) {
@@ -9,33 +10,32 @@ function errorHandler(context) {
 
 class PeerConnection {
     constructor(emitter) {
-        const servers = null;
+        const config = {
+            iceTransportPolicy: 'all',
+            iceServers: [
+                { urls: `stun:${BACKEND_IP}:3478` }
+            ]
+        };
 
         this.emitter = emitter;
 
-        this.pc = new RTCPeerConnection(servers);
+        this.pc = new RTCPeerConnection(config);
 
-        this.pc.onicecandidate = (event) => {
-            if (event.candidate) {
-                const { sdpMLineIndex, candidate } = event.candidate;
-
-                this.emitter.sendMessage({
-                    type: 'candidate',
-                    label: sdpMLineIndex,
-                    candidate: candidate
-                });
-            }
+        this.pc.ontrack = (event) => {
+            this.emitter.emit('remote_stream', event && event.streams && event.streams[0]);
         };
 
-        this.pc.onaddstream = (event) => {
-            this.emitter.emit('remote_stream', event.stream);
-        };
 
         this.subscribeEvents();
     }
 
     addStream = (stream) => {
-        this.pc.addStream(stream);
+        stream.getTracks().forEach((track) => {
+            this.pc.addTrack(
+                track,
+                stream
+            );
+        });
     }
 
     subscribeEvents = () => {
@@ -71,29 +71,58 @@ class PeerConnection {
         });
     }
 
-    createOffer = () => {
-        this.dc = this.pc.createDataChannel('RTCDataChannel', null);
+    createOffer = (restart) => {
+        if (!restart) {
+            this.dc = this.pc.createDataChannel('RTCDataChannel', null);
 
-        this.dc.onmessage = (event) => {
-            this.emitter.emit('dc_message', event);
+            this.dc.onmessage = (event) => {
+                this.emitter.emit('dc_message', event);
+            };
+
+            this.dc.onclose = function (e) {
+                console.error(e); //eslint-disable-line
+            };
+
+            this.dc.onerror = function (e) {
+                console.error(e); //eslint-disable-line
+            };
+        }
+
+        this.pc.oniceconnectionstatechange = () => {
+            if (this.pc && this.pc.iceConnectionState === 'failed') {
+                this.createOffer(true);
+            }
         };
 
-        this.dc.onclose = function (e) {
-            console.error(e); //eslint-disable-line
+        this.pc.onicecandidate = (event) => {
+            if (event.candidate) {
+                const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
+
+                this.emitter.sendMessage({
+                    type: 'candidate',
+                    id: sdpMid,
+                    label: sdpMLineIndex,
+                    candidate: candidate
+                });
+            }
         };
 
-        this.dc.onerror = function (e) {
-            console.error(e); //eslint-disable-line
+        const offerOptions = {
+            offerToReceiveAudio: true,
+            offerToReceiveVideo: true
         };
 
-        this.pc.createOffer((desc) => {
-            this.pc.setLocalDescription(desc);
-            this.emitter.sendMessage(desc);
-        }, errorHandler('createOffer'));
+        restart && (offerOptions.iceRestart = true);
+
+        this.pc.createOffer(offerOptions)
+            .then((desc) => {
+                this.pc.setLocalDescription(desc);
+                this.emitter.sendMessage(desc);
+            }, errorHandler('createOffer'));
     }
 
     createAnswer = (msg) => {
-        this.pc.ondatachannel = (event) => {
+        !this.pc.ondatachannel && (this.pc.ondatachannel = (event) => {
             this.dc = event.channel;
 
             this.dc.onopen = () => {
@@ -108,6 +137,19 @@ class PeerConnection {
                 console.error(e); //eslint-disable-line
             };
 
+        });
+
+        this.pc.onicecandidate = (event) => {
+            if (event.candidate) {
+                const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
+
+                this.emitter.sendMessage({
+                    type: 'candidate',
+                    id: sdpMid,
+                    label: sdpMLineIndex,
+                    candidate: candidate
+                });
+            }
         };
 
         this.pc.setRemoteDescription(new RTCSessionDescription(msg));
