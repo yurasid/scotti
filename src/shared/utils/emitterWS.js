@@ -18,10 +18,13 @@ class Emitter extends EventEmitter {
                 const socket = new WebSocket(`${BACKEND_SOCKET_URL}?authorization=${window.sessionStorage.getItem('authToken')}&handler=${this.owner}`);
 
                 socket.onopen = () => resolve(socket);
-                socket.onerror = reject;
+                socket.onerror = (error) => {
+                    console.log(error); // eslint-disable-line
+                    reject(error);
+                };
 
                 socket.onclose = (error) => {
-                    console.error(error); //eslint-disable-line
+                    console.error(error); // eslint-disable-line
                 };
             });
         } catch (error) {
