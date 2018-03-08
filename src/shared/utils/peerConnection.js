@@ -13,7 +13,7 @@ class PeerConnection {
         const config = {
             iceTransportPolicy: 'all',
             iceServers: [
-                // { urls: `stun:${BACKEND_IP}:3478` }
+                // { urls: `stun:45.77.138.235:3478` }
             ]
         };
 
