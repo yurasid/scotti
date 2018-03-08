@@ -1,4 +1,4 @@
-import { BACKEND_IP } from '../../../config/constants';
+// import { BACKEND_IP } from '../../../config/constants';
 
 require('webrtc-adapter');
 
@@ -13,9 +13,11 @@ class PeerConnection {
         const config = {
             iceTransportPolicy: 'all',
             iceServers: [
-                { urls: `stun:${BACKEND_IP}:3478` }
+                // { urls: `stun:${BACKEND_IP}:3478` }
             ]
         };
+
+        this.candidates = [];
 
         this.emitter = emitter;
 
@@ -25,8 +27,40 @@ class PeerConnection {
             this.emitter.emit('remote_stream', event && event.streams && event.streams[0]);
         };
 
+        this.pc.onicecandidate = (event) => {
+            if (event.candidate) {
+
+                const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
+
+                this.emitter.sendMessage({
+                    type: 'candidate',
+                    id: sdpMid,
+                    label: sdpMLineIndex,
+                    candidate: candidate
+                });
+            }
+        };
+
+        this.pc.onicegatheringstatechange = () => {
+            if (this.pc.iceGatheringState !== 'complete') {
+                return;
+            }
+            
+            this.emitter.sendMessage({
+                type: 'candidate'
+            });
+        };
 
         this.subscribeEvents();
+    }
+
+    addCandidates = () => {
+        this.candidates.map((candidate) => {
+            this.pc.addIceCandidate(new RTCIceCandidate({
+                sdpMLineIndex: candidate.label,
+                candidate: candidate.candidate
+            }), () => { }, errorHandler('AddIceCandidate'));
+        });
     }
 
     addStream = (stream) => {
@@ -44,10 +78,12 @@ class PeerConnection {
             this.pc.setRemoteDescription(new RTCSessionDescription(msg));
         });
         this.emitter.addListener('candidate', (msg) => {
-            this.pc.addIceCandidate(new RTCIceCandidate({
-                sdpMLineIndex: msg.label,
-                candidate: msg.candidate
-            }), () => { }, errorHandler('AddIceCandidate'));
+            const { id } = msg;
+            if (id) {
+                return this.candidates.push(msg);
+            }
+
+            this.addCandidates();
         });
     }
 
@@ -88,25 +124,6 @@ class PeerConnection {
             };
         }
 
-        this.pc.oniceconnectionstatechange = () => {
-            if (this.pc && this.pc.iceConnectionState === 'failed') {
-                this.createOffer(true);
-            }
-        };
-
-        this.pc.onicecandidate = (event) => {
-            if (event.candidate) {
-                const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
-
-                this.emitter.sendMessage({
-                    type: 'candidate',
-                    id: sdpMid,
-                    label: sdpMLineIndex,
-                    candidate: candidate
-                });
-            }
-        };
-
         const offerOptions = {
             offerToReceiveAudio: true,
             offerToReceiveVideo: true
@@ -114,9 +131,18 @@ class PeerConnection {
 
         restart && (offerOptions.iceRestart = true);
 
+        this.pc.oniceconnectionstatechange = () => {
+            if (this.pc) {
+                if (this.pc.iceConnectionState === 'failed') {
+                    this.createOffer(true);
+                }
+            }
+        };
+
         this.pc.createOffer(offerOptions)
             .then((desc) => {
-                this.pc.setLocalDescription(desc);
+                this.candidates = [];
+                !restart && this.pc.setLocalDescription(desc);
                 this.emitter.sendMessage(desc);
             }, errorHandler('createOffer'));
     }
@@ -139,21 +165,9 @@ class PeerConnection {
 
         });
 
-        this.pc.onicecandidate = (event) => {
-            if (event.candidate) {
-                const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
-
-                this.emitter.sendMessage({
-                    type: 'candidate',
-                    id: sdpMid,
-                    label: sdpMLineIndex,
-                    candidate: candidate
-                });
-            }
-        };
-
         this.pc.setRemoteDescription(new RTCSessionDescription(msg));
         this.pc.createAnswer((desc) => {
+            this.candidates = [];
             this.pc.setLocalDescription(desc);
             this.emitter.sendMessage(desc);
         }, errorHandler('createAnswer'));
