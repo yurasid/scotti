@@ -134,7 +134,7 @@ class PeerConnection {
         this.pc.oniceconnectionstatechange = () => {
             if (this.pc) {
                 if (this.pc.iceConnectionState === 'failed') {
-                    this.createOffer(true);
+                    // this.createOffer(true);
                 }
             }
         };
