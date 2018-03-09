@@ -27,20 +27,6 @@ class PeerConnection {
             this.emitter.emit('remote_stream', event && event.streams && event.streams[0]);
         };
 
-        this.pc.onicecandidate = (event) => {
-            if (event.candidate) {
-
-                const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
-
-                this.emitter.sendMessage({
-                    type: 'candidate',
-                    id: sdpMid,
-                    label: sdpMLineIndex,
-                    candidate: candidate
-                });
-            }
-        };
-
         this.pc.onicegatheringstatechange = () => {
             if (this.pc.iceGatheringState !== 'complete') {
                 return;
@@ -134,15 +120,29 @@ class PeerConnection {
         this.pc.oniceconnectionstatechange = () => {
             if (this.pc) {
                 if (this.pc.iceConnectionState === 'failed') {
-                    // this.createOffer(true);
+                    this.createOffer(true);
                 }
+            }
+        };
+
+        this.pc.onicecandidate = (event) => {
+            if (event.candidate) {
+
+                const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
+
+                this.emitter.sendMessage({
+                    type: 'candidate',
+                    id: sdpMid,
+                    label: sdpMLineIndex,
+                    candidate: candidate
+                });
             }
         };
 
         this.pc.createOffer(offerOptions)
             .then((desc) => {
                 this.candidates = [];
-                !restart && this.pc.setLocalDescription(desc);
+                this.pc.setLocalDescription(desc);
                 this.emitter.sendMessage(desc);
             }, errorHandler('createOffer'));
     }
@@ -164,6 +164,20 @@ class PeerConnection {
             };
 
         });
+
+        this.pc.onicecandidate = (event) => {
+            if (event.candidate) {
+
+                const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
+
+                this.emitter.sendMessage({
+                    type: 'candidate',
+                    id: sdpMid,
+                    label: sdpMLineIndex,
+                    candidate: candidate
+                });
+            }
+        };
 
         this.pc.setRemoteDescription(new RTCSessionDescription(msg));
         this.pc.createAnswer()
