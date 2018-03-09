@@ -27,16 +27,6 @@ class PeerConnection {
             this.emitter.emit('remote_stream', event && event.streams && event.streams[0]);
         };
 
-        this.pc.onicegatheringstatechange = () => {
-            if (this.pc.iceGatheringState !== 'complete') {
-                return;
-            }
-
-            this.emitter.sendMessage({
-                type: 'candidate'
-            });
-        };
-
         this.subscribeEvents();
     }
 
@@ -125,7 +115,7 @@ class PeerConnection {
             }
         };
 
-        this.pc.onicecandidate = (event) => {
+        /* this.pc.onicecandidate = (event) => {
             if (event.candidate) {
 
                 const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
@@ -137,7 +127,7 @@ class PeerConnection {
                     candidate: candidate
                 });
             }
-        };
+        }; */
 
         this.pc.createOffer(offerOptions)
             .then((desc) => {
@@ -177,6 +167,16 @@ class PeerConnection {
                     candidate: candidate
                 });
             }
+        };
+
+        this.pc.onicegatheringstatechange = () => {
+            if (this.pc.iceGatheringState !== 'complete') {
+                return;
+            }
+
+            this.emitter.sendMessage({
+                type: 'candidate'
+            });
         };
 
         this.pc.setRemoteDescription(new RTCSessionDescription(msg));
