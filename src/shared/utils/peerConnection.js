@@ -45,7 +45,7 @@ class PeerConnection {
             if (this.pc.iceGatheringState !== 'complete') {
                 return;
             }
-            
+
             this.emitter.sendMessage({
                 type: 'candidate'
             });
@@ -166,11 +166,12 @@ class PeerConnection {
         });
 
         this.pc.setRemoteDescription(new RTCSessionDescription(msg));
-        this.pc.createAnswer((desc) => {
-            this.candidates = [];
-            this.pc.setLocalDescription(desc);
-            this.emitter.sendMessage(desc);
-        }, errorHandler('createAnswer'));
+        this.pc.createAnswer()
+            .then((desc) => {
+                this.candidates = [];
+                this.pc.setLocalDescription(desc);
+                this.emitter.sendMessage(desc);
+            }, errorHandler('createAnswer'));
     }
 
     getFileDataURL = (file) => {
