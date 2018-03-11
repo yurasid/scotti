@@ -25,7 +25,7 @@ class PeerConnection {
                 credential: turn_credetnials.password,
                 username: turn_credetnials.username
             });
-            
+
             config.iceServers.push({
                 urla: `turn:${BACKEND_IP}:3478?transport=udp`,
                 credential: turn_credetnials.password,
@@ -100,21 +100,22 @@ class PeerConnection {
     }
 
     createOffer = (restart) => {
-        if (!restart) {
-            this.dc = this.pc.createDataChannel('RTCDataChannel', null);
-
-            this.dc.onmessage = (event) => {
-                this.emitter.emit('dc_message', event);
-            };
-
-            this.dc.onclose = function (e) {
-                console.error(e); //eslint-disable-line
-            };
-
-            this.dc.onerror = function (e) {
-                console.error(e); //eslint-disable-line
-            };
+        if (!restart && this.dc) {
+            this.dc.close();
         }
+        this.dc = this.pc.createDataChannel('RTCDataChannel', null);
+
+        this.dc.onmessage = (event) => {
+            this.emitter.emit('dc_message', event);
+        };
+
+        this.dc.onclose = function (e) {
+            console.error(e); //eslint-disable-line
+        };
+
+        this.dc.onerror = function (e) {
+            console.error(e); //eslint-disable-line
+        };
 
         const offerOptions = {
             offerToReceiveAudio: true,
@@ -154,7 +155,11 @@ class PeerConnection {
     }
 
     createAnswer = (msg) => {
-        !this.pc.ondatachannel && (this.pc.ondatachannel = (event) => {
+        if (this.dc) {
+            this.dc.close();
+        }
+
+        this.pc.ondatachannel = (event) => {
             this.dc = event.channel;
 
             this.dc.onopen = () => {
@@ -168,8 +173,7 @@ class PeerConnection {
             this.dc.onerror = function (e) {
                 console.error(e); //eslint-disable-line
             };
-
-        });
+        };
 
         this.pc.onicecandidate = (event) => {
             if (event.candidate) {
