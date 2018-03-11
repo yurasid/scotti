@@ -1,4 +1,4 @@
-// import { BACKEND_IP } from '../../../config/constants';
+import { BACKEND_IP } from '../../../config/constants';
 
 require('webrtc-adapter');
 
@@ -13,9 +13,25 @@ class PeerConnection {
         const config = {
             iceTransportPolicy: 'all',
             iceServers: [
-                // { urls: `stun:45.77.138.235:3478` }
+                { urls: `stun:${BACKEND_IP}:3478` }
             ]
         };
+
+        const { turn_credetnials } = emitter;
+
+        if (turn_credetnials) {
+            config.iceServers.push({
+                urla: `turn:${BACKEND_IP}:3478?transport=tcp`,
+                credential: turn_credetnials.password,
+                username: turn_credetnials.username
+            });
+            
+            config.iceServers.push({
+                urla: `turn:${BACKEND_IP}:3478?transport=udp`,
+                credential: turn_credetnials.password,
+                username: turn_credetnials.username
+            });
+        }
 
         this.candidates = [];
 
