@@ -17,19 +17,19 @@ class PeerConnection {
             ]
         };
 
-        const { turn_credetnials } = emitter;
+        const { turn_credentials } = emitter;
 
-        if (turn_credetnials) {
+        if (turn_credentials) {
             config.iceServers.push({
-                urla: `turn:${BACKEND_IP}:3478?transport=tcp`,
-                credential: turn_credetnials.password,
-                username: turn_credetnials.username
+                urls: `turn:${BACKEND_IP}:3478?transport=udp`,
+                credential: turn_credentials.password,
+                username: turn_credentials.username
             });
 
             config.iceServers.push({
-                urla: `turn:${BACKEND_IP}:3478?transport=udp`,
-                credential: turn_credetnials.password,
-                username: turn_credetnials.username
+                urls: `turn:${BACKEND_IP}:3478?transport=tcp`,
+                credential: turn_credentials.password,
+                username: turn_credentials.username
             });
         }
 
@@ -67,7 +67,7 @@ class PeerConnection {
     subscribeEvents = () => {
         this.emitter.addListener('offer', this.createAnswer);
         this.emitter.addListener('answer', (msg) => {
-            this.pc.setRemoteDescription(new RTCSessionDescription(msg));
+            !this.iceRestart && this.pc.setRemoteDescription(new RTCSessionDescription(msg));
         });
         this.emitter.addListener('candidate', (msg) => {
             const { id } = msg;
@@ -99,8 +99,8 @@ class PeerConnection {
         });
     }
 
-    createOffer = (restart) => {
-        if (!restart && this.dc) {
+    createOffer = () => {
+        if (!this.iceRestart && this.dc) {
             this.dc.close();
         }
         this.dc = this.pc.createDataChannel('RTCDataChannel', null);
@@ -122,12 +122,13 @@ class PeerConnection {
             offerToReceiveVideo: true
         };
 
-        restart && (offerOptions.iceRestart = true);
+        this.iceRestart && (offerOptions.iceRestart = true);
 
         this.pc.oniceconnectionstatechange = () => {
             if (this.pc) {
                 if (this.pc.iceConnectionState === 'failed') {
-                    this.createOffer(true);
+                    this.iceRestart = true;
+                    this.createOffer();
                 }
             }
         };

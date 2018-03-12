@@ -122,12 +122,14 @@ class Home extends Component {
                     setRemoteStreamDispatch(stream);
                 }
             }),
-            ['unauthenticated']: emitter.addListener('unauthenticated', this.reinitSockets)
+            ['unauthenticated']: emitter.addListener('unauthenticated', this.reinitSockets),
+            ['authenticated']: emitter.addListener('authenticated', () => {
+                const peerConnection = new PeerConnection(emitter);
+        
+                setCurrentPeerDispatch(peerConnection);
+            })
         };
 
-        const peerConnection = new PeerConnection(emitter);
-
-        setCurrentPeerDispatch(peerConnection);
     }
 
     componentWillMount() {

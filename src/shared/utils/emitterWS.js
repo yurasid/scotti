@@ -58,6 +58,7 @@ class Emitter extends EventEmitter {
                     break;
                 case 'authenticated':
                     this.turn_credentials = msg.credentials;
+                    this.emit('authenticated');
                     break;
                 default:
                     break;
