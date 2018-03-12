@@ -39,11 +39,7 @@ class PeerConnection {
 
         this.pc = new RTCPeerConnection(config);
 
-        this.pc.ontrack = (event) => {
-            this.emitter.emit('remote_stream', event && event.streams && event.streams[0]);
-        };
-
-        this.subscribeEvents();
+        this.subscribeEvents(this.emitter.owner);
     }
 
     addCandidates = () => {
@@ -56,18 +52,13 @@ class PeerConnection {
     }
 
     addStream = (stream) => {
-        stream.getTracks().forEach((track) => {
-            this.pc.addTrack(
-                track,
-                stream
-            );
-        });
+        this.pc.addStream(stream);
     }
 
-    subscribeEvents = () => {
+    subscribeEvents = (owner) => {
         this.emitter.addListener('offer', this.createAnswer);
         this.emitter.addListener('answer', (msg) => {
-            !this.iceRestart && this.pc.setRemoteDescription(new RTCSessionDescription(msg));
+            this.pc.setRemoteDescription(new RTCSessionDescription(msg));
         });
         this.emitter.addListener('candidate', (msg) => {
             const { id } = msg;
@@ -77,6 +68,104 @@ class PeerConnection {
 
             this.addCandidates();
         });
+
+        this.pc.onaddstream = (event) => {
+            this.emitter.emit('remote_stream', event && event.stream);
+        };
+
+        if (owner === 'terminal') {
+            this.dc = this.pc.createDataChannel('RTCDataChannel', null);
+
+            this.dc.onmessage = (event) => {
+                this.emitter.emit('dc_message', event);
+            };
+
+            this.dc.onclose = function (e) {
+                console.error(e); //eslint-disable-line
+            };
+
+            this.dc.onerror = function (e) {
+                console.error(e); //eslint-disable-line
+            };
+
+            this.pc.oniceconnectionstatechange = () => {
+                if (this.pc) {
+                    if (this.pc.iceConnectionState === 'failed') {
+                        this.createOffer(true);
+                    }
+                }
+            };
+
+            this.pc.onicecandidate = (event) => {
+                if (event.candidate) {
+
+                    const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
+
+                    this.emitter.sendMessage({
+                        type: 'candidate',
+                        id: sdpMid,
+                        label: sdpMLineIndex,
+                        candidate: candidate
+                    });
+                }
+            };
+
+            this.pc.onicegatheringstatechange = () => {
+                if (this.pc.iceGatheringState !== 'complete') {
+                    return;
+                }
+
+                this.emitter.sendMessage({
+                    type: 'candidate'
+                });
+            };
+
+        } else {
+            this.pc.ondatachannel = (event) => {
+                this.dc = event.channel;
+
+                this.dc.onopen = () => {
+                    this.emitter.emit('dc_opened');
+                };
+
+                this.dc.onclose = function (e) {
+                    console.error(e); //eslint-disable-line
+                };
+
+                this.dc.onerror = function (e) {
+                    console.error(e); //eslint-disable-line
+                };
+            };
+
+
+            this.pc.onnegotiationneeded = () => {
+                this.negotiation = true;
+            };
+
+            this.pc.onicecandidate = (event) => {
+                if (event.candidate) {
+
+                    const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
+
+                    this.emitter.sendMessage({
+                        type: 'candidate',
+                        id: sdpMid,
+                        label: sdpMLineIndex,
+                        candidate: candidate
+                    });
+                }
+            };
+
+            this.pc.onicegatheringstatechange = () => {
+                if (this.pc.iceGatheringState !== 'complete') {
+                    return;
+                }
+
+                this.emitter.sendMessage({
+                    type: 'candidate'
+                });
+            };
+        }
     }
 
     close = () => {
@@ -99,108 +188,34 @@ class PeerConnection {
         });
     }
 
-    createOffer = () => {
-        if (!this.iceRestart && this.dc) {
-            this.dc.close();
-        }
-        this.dc = this.pc.createDataChannel('RTCDataChannel', null);
-
-        this.dc.onmessage = (event) => {
-            this.emitter.emit('dc_message', event);
-        };
-
-        this.dc.onclose = function (e) {
-            console.error(e); //eslint-disable-line
-        };
-
-        this.dc.onerror = function (e) {
-            console.error(e); //eslint-disable-line
-        };
-
+    createOffer = (restart) => {
         const offerOptions = {
             offerToReceiveAudio: true,
             offerToReceiveVideo: true
         };
 
-        this.iceRestart && (offerOptions.iceRestart = true);
+        restart && (offerOptions.iceRestart = true);
 
-        this.pc.oniceconnectionstatechange = () => {
-            if (this.pc) {
-                if (this.pc.iceConnectionState === 'failed') {
-                    this.iceRestart = true;
-                    this.createOffer();
-                }
-            }
+        this.pc.onnegotiationneeded = () => {
+            this.pc.createOffer(offerOptions)
+                .then((desc) => {
+                    this.candidates = [];
+                    this.pc.setLocalDescription(desc);
+                    this.emitter.sendMessage(desc);
+                }, errorHandler('createOffer'));
         };
-
-        /* this.pc.onicecandidate = (event) => {
-            if (event.candidate) {
-
-                const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
-
-                this.emitter.sendMessage({
-                    type: 'candidate',
-                    id: sdpMid,
-                    label: sdpMLineIndex,
-                    candidate: candidate
-                });
-            }
-        }; */
-
-        this.pc.createOffer(offerOptions)
-            .then((desc) => {
-                this.candidates = [];
-                this.pc.setLocalDescription(desc);
-                this.emitter.sendMessage(desc);
-            }, errorHandler('createOffer'));
     }
 
     createAnswer = (msg) => {
-        if (this.dc) {
-            this.dc.close();
+        if (!this.negotiation) {
+            !this.ansferTimeout && (this.ansferTimeout = setTimeout(() => {
+                clearTimeout(this.ansferTimeout);
+                this.createAnswer(msg);
+            }, 500));
+            return;
         }
-
-        this.pc.ondatachannel = (event) => {
-            this.dc = event.channel;
-
-            this.dc.onopen = () => {
-                this.emitter.emit('dc_opened');
-            };
-
-            this.dc.onclose = function (e) {
-                console.error(e); //eslint-disable-line
-            };
-
-            this.dc.onerror = function (e) {
-                console.error(e); //eslint-disable-line
-            };
-        };
-
-        this.pc.onicecandidate = (event) => {
-            if (event.candidate) {
-
-                const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
-
-                this.emitter.sendMessage({
-                    type: 'candidate',
-                    id: sdpMid,
-                    label: sdpMLineIndex,
-                    candidate: candidate
-                });
-            }
-        };
-
-        this.pc.onicegatheringstatechange = () => {
-            if (this.pc.iceGatheringState !== 'complete') {
-                return;
-            }
-
-            this.emitter.sendMessage({
-                type: 'candidate'
-            });
-        };
-
         this.pc.setRemoteDescription(new RTCSessionDescription(msg));
+
         this.pc.createAnswer()
             .then((desc) => {
                 this.candidates = [];
