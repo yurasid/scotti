@@ -1,5 +1,6 @@
-require('webrtc-adapter');
+import { BACKEND_IP } from '../../../config/constants';
 
+require('webrtc-adapter');
 
 function errorHandler(context) {
     return function (error) {
@@ -9,46 +10,162 @@ function errorHandler(context) {
 
 class PeerConnection {
     constructor(emitter) {
-        const servers = null;
+        const config = {
+            iceTransportPolicy: 'all',
+            iceServers: [
+                { urls: `stun:${BACKEND_IP}:3478` }
+            ]
+        };
+
+        const { turn_credentials } = emitter;
+
+        if (turn_credentials) {
+            config.iceServers.push({
+                urls: `turn:${BACKEND_IP}:3478?transport=udp`,
+                credential: turn_credentials.password,
+                username: turn_credentials.username
+            });
+
+            config.iceServers.push({
+                urls: `turn:${BACKEND_IP}:3478?transport=tcp`,
+                credential: turn_credentials.password,
+                username: turn_credentials.username
+            });
+        }
+
+        this.candidates = [];
 
         this.emitter = emitter;
 
-        this.pc = new RTCPeerConnection(servers);
+        this.pc = new RTCPeerConnection(config);
 
-        this.pc.onicecandidate = (event) => {
-            if (event.candidate) {
-                const { sdpMLineIndex, candidate } = event.candidate;
+        this.subscribeEvents(this.emitter.owner);
+    }
 
-                this.emitter.sendMessage({
-                    type: 'candidate',
-                    label: sdpMLineIndex,
-                    candidate: candidate
-                });
-            }
-        };
-
-        this.pc.onaddstream = (event) => {
-            this.emitter.emit('remote_stream', event.stream);
-        };
-
-        this.subscribeEvents();
+    addCandidates = () => {
+        this.candidates.map((candidate) => {
+            this.pc.addIceCandidate(new RTCIceCandidate({
+                sdpMLineIndex: candidate.label,
+                candidate: candidate.candidate
+            }), () => { }, errorHandler('AddIceCandidate'));
+        });
     }
 
     addStream = (stream) => {
         this.pc.addStream(stream);
     }
 
-    subscribeEvents = () => {
+    subscribeEvents = (owner) => {
         this.emitter.addListener('offer', this.createAnswer);
         this.emitter.addListener('answer', (msg) => {
             this.pc.setRemoteDescription(new RTCSessionDescription(msg));
         });
         this.emitter.addListener('candidate', (msg) => {
-            this.pc.addIceCandidate(new RTCIceCandidate({
-                sdpMLineIndex: msg.label,
-                candidate: msg.candidate
-            }), () => { }, errorHandler('AddIceCandidate'));
+            const { id } = msg;
+            if (id) {
+                return this.candidates.push(msg);
+            }
+
+            this.addCandidates();
         });
+
+        this.pc.onaddstream = (event) => {
+            this.emitter.emit('remote_stream', event && event.stream);
+        };
+
+        if (owner === 'terminal') {
+            this.dc = this.pc.createDataChannel('RTCDataChannel', null);
+
+            this.dc.onmessage = (event) => {
+                this.emitter.emit('dc_message', event);
+            };
+
+            this.dc.onclose = function (e) {
+                console.error(e); //eslint-disable-line
+            };
+
+            this.dc.onerror = function (e) {
+                console.error(e); //eslint-disable-line
+            };
+
+            this.pc.oniceconnectionstatechange = () => {
+                if (this.pc) {
+                    if (this.pc.iceConnectionState === 'failed') {
+                        this.createOffer(true);
+                    }
+                }
+            };
+
+            this.pc.onicecandidate = (event) => {
+                if (event.candidate) {
+
+                    const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
+
+                    this.emitter.sendMessage({
+                        type: 'candidate',
+                        id: sdpMid,
+                        label: sdpMLineIndex,
+                        candidate: candidate
+                    });
+                }
+            };
+
+            this.pc.onicegatheringstatechange = () => {
+                if (this.pc.iceGatheringState !== 'complete') {
+                    return;
+                }
+
+                this.emitter.sendMessage({
+                    type: 'candidate'
+                });
+            };
+
+        } else {
+            this.pc.ondatachannel = (event) => {
+                this.dc = event.channel;
+
+                this.dc.onopen = () => {
+                    this.emitter.emit('dc_opened');
+                };
+
+                this.dc.onclose = function (e) {
+                    console.error(e); //eslint-disable-line
+                };
+
+                this.dc.onerror = function (e) {
+                    console.error(e); //eslint-disable-line
+                };
+            };
+
+
+            this.pc.onnegotiationneeded = () => {
+                this.negotiation = true;
+            };
+
+            this.pc.onicecandidate = (event) => {
+                if (event.candidate) {
+
+                    const { sdpMLineIndex, candidate, sdpMid } = event.candidate;
+
+                    this.emitter.sendMessage({
+                        type: 'candidate',
+                        id: sdpMid,
+                        label: sdpMLineIndex,
+                        candidate: candidate
+                    });
+                }
+            };
+
+            this.pc.onicegatheringstatechange = () => {
+                if (this.pc.iceGatheringState !== 'complete') {
+                    return;
+                }
+
+                this.emitter.sendMessage({
+                    type: 'candidate'
+                });
+            };
+        }
     }
 
     close = () => {
@@ -71,50 +188,40 @@ class PeerConnection {
         });
     }
 
-    createOffer = () => {
-        this.dc = this.pc.createDataChannel('RTCDataChannel', null);
-
-        this.dc.onmessage = (event) => {
-            this.emitter.emit('dc_message', event);
+    createOffer = (restart) => {
+        const offerOptions = {
+            offerToReceiveAudio: true,
+            offerToReceiveVideo: true
         };
 
-        this.dc.onclose = function (e) {
-            console.error(e); //eslint-disable-line
-        };
+        restart && (offerOptions.iceRestart = true);
 
-        this.dc.onerror = function (e) {
-            console.error(e); //eslint-disable-line
+        this.pc.onnegotiationneeded = () => {
+            this.pc.createOffer(offerOptions)
+                .then((desc) => {
+                    this.candidates = [];
+                    this.pc.setLocalDescription(desc);
+                    this.emitter.sendMessage(desc);
+                }, errorHandler('createOffer'));
         };
-
-        this.pc.createOffer((desc) => {
-            this.pc.setLocalDescription(desc);
-            this.emitter.sendMessage(desc);
-        }, errorHandler('createOffer'));
     }
 
     createAnswer = (msg) => {
-        this.pc.ondatachannel = (event) => {
-            this.dc = event.channel;
-
-            this.dc.onopen = () => {
-                this.emitter.emit('dc_opened');
-            };
-
-            this.dc.onclose = function (e) {
-                console.error(e); //eslint-disable-line
-            };
-
-            this.dc.onerror = function (e) {
-                console.error(e); //eslint-disable-line
-            };
-
-        };
-
+        if (!this.negotiation) {
+            !this.ansferTimeout && (this.ansferTimeout = setTimeout(() => {
+                clearTimeout(this.ansferTimeout);
+                this.createAnswer(msg);
+            }, 500));
+            return;
+        }
         this.pc.setRemoteDescription(new RTCSessionDescription(msg));
-        this.pc.createAnswer((desc) => {
-            this.pc.setLocalDescription(desc);
-            this.emitter.sendMessage(desc);
-        }, errorHandler('createAnswer'));
+
+        this.pc.createAnswer()
+            .then((desc) => {
+                this.candidates = [];
+                this.pc.setLocalDescription(desc);
+                this.emitter.sendMessage(desc);
+            }, errorHandler('createAnswer'));
     }
 
     getFileDataURL = (file) => {

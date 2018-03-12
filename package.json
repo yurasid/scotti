@@ -9,10 +9,10 @@
     "build:dev:terminal": "webpack --config ./config/webpack.dev.terminal.js",
     "start:electron:concierge": "npm run build:dev:concierge && electron ./dist/concierge/",
     "start:electron:terminal": "npm run build:dev:terminal && electron ./dist/terminal/",
-    "start:web:concierge": "npm run build:dev:concierge && node ./dist/concierge/server.js",
-    "start:web:deb:server:concierge": "npm run build:dev:concierge && node --inspect ./dist/concierge/server.js",
-    "start:web:terminal": "npm run build:dev:terminal && node ./dist/terminal/server.js",
-    "start:web:deb:server:terminal": "npm run build:dev:terminal && node --inspect ./dist/terminal/server.js",
+    "start:web:concierge": "npm run build:dev:concierge && cd ./dist/concierge && node ./server.js",
+    "start:web:deb:server:concierge": "npm run build:dev:concierge && cd ./dist/concierge && node --inspect ./server.js",
+    "start:web:terminal": "npm run build:dev:terminal && cd ./dist/terminal && node ./server.js",
+    "start:web:deb:server:terminal": "npm run build:dev:terminal && cd ./dist/terminal && node --inspect ./server.js",
     "dist:concierge": "npm run build:dev:concierge && cd dist/concierge/ && npm install && npm run dist",
     "dist:terminal": "npm run build:dev:terminal && cd dist/terminal/ && npm install && npm run dist",
     "pack:concierge": "npm run build:dev:concierge && cd dist/concierge/ && npm install && npm run pack",
@@ -31,6 +31,7 @@
     "classnames": "2.2.5",
     "express": "4.16.2",
     "express-http-proxy": "1.1.0",
+    "express-winston": "^2.5.0",
     "fbemitter": "2.1.1",
     "glob": "7.1.2",
     "history": "4.7.2",
@@ -52,7 +53,8 @@
     "redux-thunk": "2.2.0",
     "styled-components": "2.2.4",
     "uuid": "3.1.0",
-    "webrtc-adapter": "6.1.0"
+    "webrtc-adapter": "6.1.0",
+    "winston": "^2.4.0"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",

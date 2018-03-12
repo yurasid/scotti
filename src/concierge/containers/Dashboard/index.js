@@ -103,7 +103,8 @@ class Home extends Component {
     init = async (props) => {
         const {
             currentPeer: {
-                emitter
+                emitter,
+                remoteStream
             },
             setCurrentPeerDispatch,
             setRemoteStreamDispatch,
@@ -116,13 +117,19 @@ class Home extends Component {
 
         this.events = {
             ['want_call']: emitter.addListener('want_call', this.wantCallHandler),
-            ['remote_stream']: emitter.addListener('remote_stream', setRemoteStreamDispatch),
-            ['unauthenticated']: emitter.addListener('unauthenticated', this.reinitSockets)
+            ['remote_stream']: emitter.addListener('remote_stream', (stream) => {
+                if (remoteStream !== stream) {
+                    setRemoteStreamDispatch(stream);
+                }
+            }),
+            ['unauthenticated']: emitter.addListener('unauthenticated', this.reinitSockets),
+            ['authenticated']: emitter.addListener('authenticated', () => {
+                const peerConnection = new PeerConnection(emitter);
+        
+                setCurrentPeerDispatch(peerConnection);
+            })
         };
 
-        const peerConnection = new PeerConnection(emitter);
-
-        setCurrentPeerDispatch(peerConnection);
     }
 
     componentWillMount() {
@@ -193,7 +200,8 @@ Home.propTypes = {
     currentPeer: PropTypes.shape({
         peer: PropTypes.shape({}),
         emitter: PropTypes.shape({}),
-        creating: PropTypes.bool
+        creating: PropTypes.bool,
+        remoteStream: PropTypes.shape({})
     }),
     currentUser: PropTypes.shape({
         id: PropTypes.number,
@@ -216,7 +224,8 @@ function mapStoreToProps(store) {
         currentPeer: {
             peer: store.currentPeer.peer,
             emitter: store.currentPeer.emitter,
-            creating: store.currentPeer.creating
+            creating: store.currentPeer.creating,
+            remoteStream: store.currentPeer.remoteStream,
         }
     };
 }

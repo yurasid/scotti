@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { login, updateLoginRetries } from '../../redux/actions/login';
 import { fetchCurrentUser } from '../../redux/actions/user';
 import { setCurrentEmitter } from '../../redux/actions/peerConnection';
+import { logError } from '../../redux/actions/logger';
 
 import { Loader } from '../../../shared/components/';
 import NotAvailable from './components/notAvailable';
@@ -29,6 +30,7 @@ class Login extends Component {
             fetchCurrentUserDispatch,
             setCurrentEmitterDispatch,
             updateLoginRetriesDispatch,
+            logErrorDispatch,
             loginTries: {
                 tries,
                 timeoutError,
@@ -40,18 +42,16 @@ class Login extends Component {
         try {
             emitter && emitter.close() && await setCurrentEmitterDispatch(null);
 
-            await loginDispatch({
-                /* 'uid': '7c0b0522-3916-3b03-ac19-ad5805652145',
-                'password': 'secret' */
-            });
+            await loginDispatch({});
             await fetchCurrentUserDispatch();
 
             return history.push('/');
         } catch (error) {
             if (tries !== maxTries) {
                 return updateLoginRetriesDispatch({ tries: tries + 1 });
-
             }
+
+            logErrorDispatch(error.toString());
 
             return this.timeout = setTimeout(() => {
                 return updateLoginRetriesDispatch({
@@ -129,6 +129,7 @@ Login.propTypes = {
     updateLoginRetriesDispatch: PropTypes.func.isRequired,
     fetchCurrentUserDispatch: PropTypes.func.isRequired,
     setCurrentEmitterDispatch: PropTypes.func.isRequired,
+    logErrorDispatch: PropTypes.func.isRequired,
     emitter: PropTypes.shape({})
 };
 
@@ -144,7 +145,8 @@ const mapDispatchToProps = (dispatch) => {
         loginDispatch: login,
         updateLoginRetriesDispatch: updateLoginRetries,
         fetchCurrentUserDispatch: fetchCurrentUser,
-        setCurrentEmitterDispatch: setCurrentEmitter
+        setCurrentEmitterDispatch: setCurrentEmitter,
+        logErrorDispatch: logError
     }, dispatch);
 };
 

@@ -6,16 +6,23 @@ const sync = require('glob').sync;
 const bodyParser = require('body-parser');
 const CONSTANTS = require('./constants');
 const util = require('util');
+const logger = require('./logger')(module);
 
 const readFile = util.promisify(fs.readFile);
 
-module.exports = function (electronApp) {
+/* module.exports = function (electronApp) {
     const app = express();
 
     app.use(bodyParser.json({ strict: false, limit: 1024 * 1024 * 200 }));
     app.use(bodyParser.urlencoded({ extended: false, limit: 1024 * 1024 * 200 }));
 
     app.use(express.static(path.resolve(__dirname)));
+
+    app.post('/logger', (req, res) => {
+        const { body: { level, message, label = 'UI' } } = req;
+        logger[level](message, { label });
+        res.status(200).send({});
+    });
 
     app.use('/api/terminal/login', proxy(CONSTANTS.BACKEND_URL, {
         preservHostHdr: true,
@@ -61,14 +68,20 @@ module.exports = function (electronApp) {
     app.listen(9001, () => {
         console.log('React Terminal part at: http://localhost:9001'); // eslint-disable-line no-console
     });
-};
+}; */
 
-/* const app = express();
+const app = express();
 
 app.use(bodyParser.json({ strict: false, limit: 1024 * 1024 * 200 }));
 app.use(bodyParser.urlencoded({ extended: false, limit: 1024 * 1024 * 200 }));
 
 app.use(express.static(path.resolve(__dirname)));
+
+app.post('/logger', (req, res) => {
+    const { body: { level, message, label = 'UI' } } = req;
+    logger[level](message, { label });
+    res.status(200).send({});
+});
 
 app.use('/api', proxy(CONSTANTS.BACKEND_URL, {
     preservHostHdr: true,
@@ -96,4 +109,4 @@ app.get('*', (req, res) => res.sendFile(path.join(__dirname, '/index.html')));
 
 app.listen(9001, () => {
     console.log('React Terminal part at: http://localhost:9001'); // eslint-disable-line no-console
-}); */
+});
