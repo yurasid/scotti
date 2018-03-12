@@ -26,7 +26,6 @@ function createWindow() {
     
     mainWindow.once('ready-to-show', function() {
         mainWindow.show();
-        mainWindow.openDevTools();
     });
 
     mainWindow.maximize();

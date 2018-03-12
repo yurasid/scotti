@@ -3,23 +3,26 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
-
 let mainWindow;
 
-function createWindow () {
+function createWindow() {
     require('./server.js')(app);
+    
+    const screenElectron = electron.screen;
+    const mainScreen = screenElectron.getPrimaryDisplay();
+    const dimensions = mainScreen.workAreaSize;
+
     mainWindow = new BrowserWindow({
-        width: 600, 
-        height: 900,
-        kiosk: true,
+        width: dimensions.height * .32,
+        height: dimensions.height,
+        // kiosk: true,
         show: false
     });
 
     mainWindow.loadURL('http://localhost:9001/');
 
-    mainWindow.once('ready-to-show', function() {
+    mainWindow.once('ready-to-show', function () {
         mainWindow.show();
-        mainWindow.openDevTools();
     });
 
     mainWindow.on('closed', function () {
