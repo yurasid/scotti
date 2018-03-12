@@ -1,6 +1,6 @@
 const path = require('path');
 
-const BACKEND_IP = '45.77.138.235';
+const BACKEND_IP = '199.247.12.39';
 
 module.exports = {
     BACKEND_URL: `http://${BACKEND_IP}`,
