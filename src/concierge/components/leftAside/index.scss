@@ -26,8 +26,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-left: 2vmin;
-    padding-right: 2vmin;
+    padding-left: 2vw;
+    padding-right: 2vw;
     & > span:last-child {
         font-family: 'Open Sans';
         font-size: calc(12px + .5vmin);
@@ -100,7 +100,7 @@
 .terminalInfo {
     display: flex;
     flex-direction: column;
-    height: 10vmin;
+    height: 10vh;
     span {
         font-family: 'Open Sans';
         font-size: 1.5vmin;

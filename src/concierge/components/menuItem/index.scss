@@ -64,6 +64,9 @@ $white: #ffffff;
         &:first-child {
             margin-right: 24px;
         }
+        &:only-child {
+            margin-right: 0;
+        }
     }
 }
 
