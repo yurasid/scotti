@@ -10,7 +10,7 @@ const logger = require('./logger')(module);
 
 const readFile = util.promisify(fs.readFile);
 
-module.exports = function (electronApp) {
+/* module.exports = function (electronApp) {
     const app = express();
 
     app.use(bodyParser.json({ strict: false, limit: 1024 * 1024 * 200 }));
@@ -68,8 +68,8 @@ module.exports = function (electronApp) {
     app.listen(9001, () => {
         console.log('React Terminal part at: http://localhost:9001'); // eslint-disable-line no-console
     });
-};
-/*
+}; */
+
 const app = express();
 
 app.use(bodyParser.json({ strict: false, limit: 1024 * 1024 * 200 }));
@@ -110,4 +110,3 @@ app.get('*', (req, res) => res.sendFile(path.join(__dirname, '/index.html')));
 app.listen(9001, () => {
     console.log('React Terminal part at: http://localhost:9001'); // eslint-disable-line no-console
 });
-*/
