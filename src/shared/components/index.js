@@ -4,6 +4,8 @@ import Icon from './Icon/';
 import ProtectedRoute from './ProtectedRoute';
 import Button from './Button/';
 import Loader from './Loader/';
+import Spinner from './Spinner/';
+import LogoSpinner from './LogoSpinner/';
 
 export {
     Input,
@@ -11,5 +13,7 @@ export {
     Ringing,
     ProtectedRoute,
     Button,
-    Loader
+    Loader,
+    Spinner,
+    LogoSpinner
 };
