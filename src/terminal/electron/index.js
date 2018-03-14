@@ -8,9 +8,14 @@ let mainWindow;
 
 function createWindow () {
     require('./server.js')(app);
+
+    const screenElectron = electron.screen;
+    const mainScreen = screenElectron.getPrimaryDisplay();
+    const dimensions = mainScreen.workAreaSize;
+
     mainWindow = new BrowserWindow({
-        width: 600, 
-        height: 900,
+        width: dimensions.height * 1080 / 1920, 
+        height: dimensions.height,
         kiosk: true,
         show: false
     });
