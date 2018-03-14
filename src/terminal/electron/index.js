@@ -3,10 +3,9 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
-
 let mainWindow;
 
-function createWindow () {
+function createWindow() {
     require('./server.js')(app);
 
     const screenElectron = electron.screen;
@@ -22,7 +21,7 @@ function createWindow () {
 
     mainWindow.loadURL('http://localhost:9001/');
 
-    mainWindow.once('ready-to-show', function() {
+    mainWindow.once('ready-to-show', function () {
         mainWindow.show();
     });
 
