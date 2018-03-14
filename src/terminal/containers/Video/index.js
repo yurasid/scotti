@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 
 import PeerConnection from '../../../shared/utils/peerConnection';
 import { Button, Loader } from '../../../shared/components/';
@@ -35,6 +36,7 @@ class Video extends Component {
             video: true,
             error: null,
             remoteStream: null,
+            remoteStreamLoaded: false,
             busy: false,
             onhold: false
         };
@@ -56,7 +58,15 @@ class Video extends Component {
     setRemoteVideostream = () => {
         const { remoteStream } = this.state;
 
-        this.conciergevideo && (this.conciergevideo.srcObject = remoteStream);
+        if (this.conciergevideo) {
+            this.conciergevideo.srcObject = remoteStream;
+
+            this.conciergevideo.addEventListener('loadeddata', () => {
+                this.setState({
+                    remoteStreamLoaded: true
+                });
+            }, false);
+        }
     }
 
     gotremoteStream = (stream) => {
@@ -225,7 +235,7 @@ class Video extends Component {
 
     render() {
         const { intl: { formatMessage } } = this.props;
-        const { error, video, remoteStream, busy, imgUrl, onhold } = this.state;
+        const { error, video, remoteStream, remoteStreamLoaded, busy, imgUrl, onhold } = this.state;
 
         return (
             <div className={styles.mainContainer}>
@@ -241,10 +251,18 @@ class Video extends Component {
                             condition={!onhold}
                         >
                             <Fragment>
-                                {!error ? <video
-                                    autoPlay
-                                    ref={video => this.conciergevideo = video}
-                                /> :
+                                {!error ? (
+                                    <Fragment>
+                                        <video
+                                            autoPlay
+                                            ref={video => this.conciergevideo = video}
+                                            className={classNames({
+                                                [styles.displayNone]: !remoteStreamLoaded
+                                            })}
+                                        />
+                                        {!remoteStreamLoaded && <LoaderComponent />}
+                                    </Fragment>
+                                ) :
                                     <div>{error.toString()}</div>}
                                 {imgUrl &&
                                     <div className={styles.picture}>

@@ -36,13 +36,12 @@
 }
 
 .controlPanel {
-    min-height: 9vmin;
-    margin-top: 1vmin;
+    min-height: 9vh;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-bottom: 4vmin;
+    padding-bottom: 4vh;
     & > div {
         display: flex;
         justify-content: space-between;
@@ -85,4 +84,13 @@
     border-radius: 50%;
     clip-path: circle(100% at center);
     overflow: hidden;
+}
+
+.spinner {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate3d(-50%,-50%,0);
+    width: 15vw;
+    height: 15vw;
 }
