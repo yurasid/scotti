@@ -16,7 +16,7 @@ function createWindow () {
     mainWindow = new BrowserWindow({
         width: dimensions.height * 1080 / 1920, 
         height: dimensions.height,
-        kiosk: true,
+        kiosk: false,
         show: false
     });
 
@@ -24,7 +24,6 @@ function createWindow () {
 
     mainWindow.once('ready-to-show', function() {
         mainWindow.show();
-        mainWindow.openDevTools();
     });
 
     mainWindow.on('closed', function () {
