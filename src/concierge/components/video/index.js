@@ -11,7 +11,7 @@ import classNames from 'classnames';
 
 import { setLocalStream, setCurrentFile, setRemoteStream } from '../../redux/actions/peerConnection';
 import { setCurrentTerminal } from '../../redux/actions/terminals';
-import { Ringing, Button } from '../../../shared/components';
+import { Ringing, Button, LogoSpinner } from '../../../shared/components';
 import { File, TerminalInfo } from '../';
 
 import styles from './index.scss';
@@ -31,7 +31,8 @@ class Video extends Component {
             audio: true,
             video: true,
             ready: false,
-            shareButtonEnabled: false
+            shareButtonEnabled: false,
+            remoteStreamLoaded: false
         };
     }
 
@@ -110,12 +111,6 @@ class Video extends Component {
         const { currentPeer: { emitter } } = this.props;
         this.start();
 
-        /* emitter.addListener('toggle_stream', () => {
-            this.setState({
-                remoteMuted: !this.state.remoteMuted
-            });
-        }); */
-
         emitter.addListener('hang_up', () => {
             const { pushDispatch } = this.props;
 
@@ -134,10 +129,33 @@ class Video extends Component {
         });
     }
 
+    componentWillReceiveProps(nextProps) {
+        const { currentPeer: { remoteStream } } = this.props;
+        const { currentPeer: { remoteStream: nextStream } } = nextProps;
+
+        const loadeddataCB = () => {
+            this.setState({
+                remoteStreamLoaded: true
+            });
+        };
+
+        if (this.video) {
+            if (nextStream !== remoteStream) {
+                this.video.removeEventListener('loadeddata', loadeddataCB);
+                this.video.addEventListener('loadeddata', loadeddataCB, false);
+            }
+        }
+    }
+
     componentDidUpdate() {
         const { currentPeer: { remoteStream } } = this.props;
 
-        this.video && (this.video.srcObject = remoteStream);
+        if (this.video) {
+            const currentStream = this.video.srcObject;
+            if (currentStream !== remoteStream) {
+                this.video.srcObject = remoteStream;
+            }
+        }
     }
 
     componentWillUnmount() {
@@ -150,7 +168,7 @@ class Video extends Component {
             currentTerminal,
             currentPeer: { file }
         } = this.props;
-        const { ready, shareButtonEnabled } = this.state;
+        const { ready, shareButtonEnabled, remoteStreamLoaded } = this.state;
 
         let element = (
             <div className={styles.container}>
@@ -194,6 +212,7 @@ class Video extends Component {
                             autoPlay
                             ref={video => this.video = video}
                         />
+                        {!remoteStreamLoaded && <LogoSpinner className={styles.spinner} />}
                         <div
                             className={classNames({
                                 [styles.controlPanel]: true,

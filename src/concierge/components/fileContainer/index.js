@@ -33,9 +33,11 @@ class File extends Component {
 
     deinit = async () => {
         const {
-            setCurrentFileDispatch
+            setCurrentFileDispatch,
+            currentPeer: { peer }
         } = this.props;
 
+        peer.sendFile(undefined);
         setCurrentFileDispatch(null);
     }
 

@@ -1,13 +1,13 @@
 import React, { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Icon } from '../../../../shared/components/';
+import { LogoSpinner } from '../../../../shared/components/';
 
 import styles from './../index.scss';
 
 const LoaderComponent = () => (
     <Fragment>
-        <Icon name='logoconnecting' className={styles.connectingIco} />
+        <LogoSpinner className={styles.connectingIco} />
         <FormattedMessage
             id='Video.connecting'
             defaultMessage='connecting...'

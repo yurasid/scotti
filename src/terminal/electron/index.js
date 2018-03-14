@@ -7,15 +7,15 @@ let mainWindow;
 
 function createWindow() {
     require('./server.js')(app);
-    
+
     const screenElectron = electron.screen;
     const mainScreen = screenElectron.getPrimaryDisplay();
     const dimensions = mainScreen.workAreaSize;
 
     mainWindow = new BrowserWindow({
-        width: dimensions.height * .32,
+        width: dimensions.height * 1080 / 1920, 
         height: dimensions.height,
-        // kiosk: true,
+        kiosk: false,
         show: false
     });
 
