@@ -13,7 +13,7 @@ function createWindow() {
     const dimensions = mainScreen.workAreaSize;
 
     mainWindow = new BrowserWindow({
-        width: dimensions.height * 1080 / 1920, 
+        width: dimensions.height * 9 / 16, 
         height: dimensions.height,
         kiosk: false,
         show: false
