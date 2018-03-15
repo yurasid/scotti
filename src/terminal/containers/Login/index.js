@@ -43,7 +43,7 @@ class Login extends Component {
             emitter && emitter.close() && await setCurrentEmitterDispatch(null);
 
             await loginDispatch({
-                uid: '7c0b0522-3916-3b03-ac19-ad5805652145',
+                uid: '6d24c249-00d7-3a25-898f-7ff0ff9d154d',
                 password: 'secret'
             });
             await fetchCurrentUserDispatch();
