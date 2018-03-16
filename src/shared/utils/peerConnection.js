@@ -57,7 +57,23 @@ class PeerConnection {
         };
 
         this.dc.onmessage = (event) => {
-            this.emitter.emit('dc_message', event);
+            let data;
+
+            try {
+                data = JSON.parse(event.data);
+            } catch (error) {
+                return false;
+            }
+
+            const { type, ...endOfMessage } = data;
+
+            if (type === 'file') {
+                this.emitter.emit('dc_file', endOfMessage);
+            }
+
+            if (type === 'fileReceived') {
+                this.emitter.emit('dc_fileReceived', endOfMessage);
+            }
         };
 
         this.dc.onoppen = (event) => {
@@ -214,6 +230,13 @@ class PeerConnection {
     }
 
     getFileDataURL = (file) => {
+        const mimeFullType = file.type || '';
+        const mimeType = mimeFullType.split('/')[0];
+
+        if (!mimeType || mimeType !== 'image') {
+            throw new Error('notImage');
+        }
+
         const reader = new FileReader();
 
         return new Promise((resolve, reject) => {
@@ -226,13 +249,17 @@ class PeerConnection {
         });
     }
 
-    sendFile = async (fileDataURL = '') => {
-        const dc = this.dc;
+    sendDCMessage = (message) => {
+        this.dc && this.dc.send(JSON.stringify(message));
+    }
 
+    sendFile = async (fileDataURL = '') => {
         const chunkSize = 16384;
 
-        function sendFileByChunks(text, resolve) {
-            const data = {};
+        const sendFileByChunks = (text, resolve) => {
+            const data = {
+                type: 'file'
+            };
 
             if (text.length > chunkSize) {
                 data.message = text.slice(0, chunkSize);
@@ -241,7 +268,7 @@ class PeerConnection {
                 data.last = true;
             }
 
-            dc.send(JSON.stringify(data));
+            this.sendDCMessage(data);
 
             const remainingDataURL = text.slice(data.message.length);
 
@@ -252,7 +279,7 @@ class PeerConnection {
             }
 
             return resolve();
-        }
+        };
 
         return await new Promise((resolve) => {
             sendFileByChunks(fileDataURL, resolve);

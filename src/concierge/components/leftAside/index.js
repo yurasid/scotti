@@ -7,7 +7,7 @@ import classNames from 'classnames';
 
 import { TerminalInfo } from '../index';
 
-import { Icon, Button } from '../../../shared/components';
+import { Icon, Button, FileView } from '../../../shared/components';
 
 import styles from './index.scss';
 
@@ -72,6 +72,9 @@ class Aside extends Component {
                             ref={video => this.video = video}
                         />
                     </div>
+                    <FileView
+                        className={styles.picture}
+                    />
                     <div
                         className={styles.overlay}
                         style={{
@@ -114,7 +117,8 @@ Aside.propTypes = {
     localStream: PropTypes.shape({}),
     emitter: PropTypes.shape({}),
     remoteStream: PropTypes.shape({}),
-    currentTerminal: PropTypes.shape({})
+    currentTerminal: PropTypes.shape({}),
+    peer: PropTypes.shape({})
 };
 
 function mapStoreToProps(store) {
@@ -122,6 +126,7 @@ function mapStoreToProps(store) {
         emitter: store.currentPeer.emitter,
         localStream: store.currentPeer.localStream,
         remoteStream: store.currentPeer.remoteStream,
+        peer: store.currentPeer.peer,
         currentTerminal: store.terminals.currentTerminal
     };
 }

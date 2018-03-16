@@ -6,6 +6,7 @@ import Button from './Button/';
 import Loader from './Loader/';
 import Spinner from './Spinner/';
 import LogoSpinner from './LogoSpinner/';
+import FileView from './FileView/';
 
 export {
     Input,
@@ -15,5 +16,6 @@ export {
     Button,
     Loader,
     Spinner,
-    LogoSpinner
+    LogoSpinner,
+    FileView
 };

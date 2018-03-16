@@ -5,7 +5,7 @@ import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 
 import PeerConnection from '../../../shared/utils/peerConnection';
-import { Button, Loader } from '../../../shared/components/';
+import { Button, Loader, FileView } from '../../../shared/components/';
 import LoaderComponent from './components/loader';
 import BusyComponent from './components/busy';
 import OnHold from './components/holdon';
@@ -128,8 +128,6 @@ class Video extends Component {
     }
 
     initEvents = (emitter) => {
-        let arrayOfChunks = [];
-
         emitter.addListener('ready_call', this.createOffer);
         emitter.addListener('remote_stream', this.gotremoteStream);
         emitter.addListener('call_started', (msg) => {
@@ -155,29 +153,6 @@ class Video extends Component {
             this.setState({
                 onhold: state
             }, this.setRemoteVideostream);
-        });
-
-        emitter.addListener('dc_message', (event) => {
-            let data = {};
-
-            try {
-                data = JSON.parse(event.data);
-            } catch (error) {
-                return false;
-            }
-
-            const { message, last } = data;
-
-            arrayOfChunks.push(message);
-
-            if (last) {
-                const received = arrayOfChunks.join('');
-                arrayOfChunks = [];
-
-                this.setState({
-                    imgUrl: received
-                });
-            }
         });
     }
 
@@ -235,7 +210,7 @@ class Video extends Component {
 
     render() {
         const { intl: { formatMessage } } = this.props;
-        const { error, video, remoteStream, remoteStreamLoaded, busy, imgUrl, onhold } = this.state;
+        const { error, video, remoteStream, remoteStreamLoaded, busy, onhold } = this.state;
 
         return (
             <div className={styles.mainContainer}>
@@ -264,11 +239,11 @@ class Video extends Component {
                                     </Fragment>
                                 ) :
                                     <div>{error.toString()}</div>}
-                                {imgUrl &&
-                                    <div className={styles.picture}>
-                                        <img src={imgUrl} />
-                                    </div>
-                                }
+                                <FileView
+                                    className={styles.picture}
+                                    showOnFile={true}
+                                    peer={this.peerConnection}
+                                />
                             </Fragment>
                         </Loader>
                     </Loader>
