@@ -31,7 +31,7 @@ $validColor: #75df00;
 :local {
     .label--common {
         position: absolute;
-        font-size: 18px;
+        font-size: 2vmin;
         padding: 8px 0;
         
         line-height: 1.33;
@@ -59,7 +59,7 @@ $validColor: #75df00;
         padding: 8px 0;
 
         input {
-            font-size: 18px;
+            font-size: 2vmin;
             width: 100%;
             background-color: transparent;
             border: 0px solid;

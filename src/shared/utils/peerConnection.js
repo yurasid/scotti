@@ -42,13 +42,18 @@ class PeerConnection {
         this.subscribeEvents();
     }
 
-    addCandidates = () => {
-        this.candidates.map((candidate) => {
+    addCandidates = (singleCandidate) => {
+        const addIceCandidate = (candidate) => {
             this.pc.addIceCandidate(new RTCIceCandidate({
                 sdpMLineIndex: candidate.label,
                 candidate: candidate.candidate
             }), () => { }, errorHandler('AddIceCandidate'));
-        });
+        };
+
+        this.candidates.map(addIceCandidate);
+        this.candidates = [];
+
+        singleCandidate && addIceCandidate(singleCandidate);
     }
 
     subsctibeDCEvents = () => {
@@ -57,7 +62,23 @@ class PeerConnection {
         };
 
         this.dc.onmessage = (event) => {
-            this.emitter.emit('dc_message', event);
+            let data;
+
+            try {
+                data = JSON.parse(event.data);
+            } catch (error) {
+                return false;
+            }
+
+            const { type, ...endOfMessage } = data;
+
+            if (type === 'file') {
+                this.emitter.emit('dc_file', endOfMessage);
+            }
+
+            if (type === 'fileReceived') {
+                this.emitter.emit('dc_fileReceived', endOfMessage);
+            }
         };
 
         this.dc.onoppen = (event) => {
@@ -74,14 +95,18 @@ class PeerConnection {
     }
 
     subscribeEvents = () => {
+        this.emitter.addListener('call_started', (msg) => {
+            this.callInfo = msg;
+        });
         this.emitter.addListener('offer', this.createAnswer);
         this.emitter.addListener('answer', (msg) => {
             this.pc.setRemoteDescription(new RTCSessionDescription(msg));
+            this.registerAtOnce = true;
         });
         this.emitter.addListener('candidate', (msg) => {
             const { id, candidate } = msg;
-            if (id) {
-                return candidate && this.candidates.push(msg);
+            if (id && candidate) {
+                this.registerAtOnce ? this.addCandidates(msg) : this.candidates.push(msg);
             }
 
             this.addCandidates();
@@ -140,6 +165,8 @@ class PeerConnection {
             this.pc.close();
             this.pc = null;
         }
+
+        this.callInfo = null;
     }
 
     readyForCall() {
@@ -154,7 +181,6 @@ class PeerConnection {
             terminal_id: id
         });
     }
-
 
     createOffer = (restart) => {
         if (!this.negotiation) {
@@ -188,9 +214,14 @@ class PeerConnection {
 
         this.pc.createOffer(offerOptions)
             .then((desc) => {
+                const { callInfo: { concierge_connection_id } } = this;
                 this.candidates = [];
+                this.registerAtOnce = false;
                 this.pc.setLocalDescription(desc);
-                this.emitter.sendMessage(desc);
+                this.emitter.sendMessage({
+                    concierge_connection_id,
+                    ...desc.toJSON()
+                });
             }, errorHandler('createOffer'));
     }
 
@@ -204,6 +235,7 @@ class PeerConnection {
         }
 
         this.pc.setRemoteDescription(new RTCSessionDescription(msg));
+        this.registerAtOnce = true;
 
         this.pc.createAnswer()
             .then((desc) => {
@@ -214,6 +246,13 @@ class PeerConnection {
     }
 
     getFileDataURL = (file) => {
+        const mimeFullType = file.type || '';
+        const mimeType = mimeFullType.split('/')[0];
+
+        if (!mimeType || mimeType !== 'image') {
+            throw new Error('notImage');
+        }
+
         const reader = new FileReader();
 
         return new Promise((resolve, reject) => {
@@ -226,13 +265,17 @@ class PeerConnection {
         });
     }
 
-    sendFile = async (fileDataURL = '') => {
-        const dc = this.dc;
+    sendDCMessage = (message) => {
+        this.dc && this.dc.send(JSON.stringify(message));
+    }
 
+    sendFile = async (fileDataURL = '') => {
         const chunkSize = 16384;
 
-        function sendFileByChunks(text, resolve) {
-            const data = {};
+        const sendFileByChunks = (text, resolve) => {
+            const data = {
+                type: 'file'
+            };
 
             if (text.length > chunkSize) {
                 data.message = text.slice(0, chunkSize);
@@ -241,7 +284,7 @@ class PeerConnection {
                 data.last = true;
             }
 
-            dc.send(JSON.stringify(data));
+            this.sendDCMessage(data);
 
             const remainingDataURL = text.slice(data.message.length);
 
@@ -252,7 +295,7 @@ class PeerConnection {
             }
 
             return resolve();
-        }
+        };
 
         return await new Promise((resolve) => {
             sendFileByChunks(fileDataURL, resolve);

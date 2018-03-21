@@ -9,9 +9,25 @@
     justify-content: center;
     margin-bottom: 2vh;
     max-height: 30vh;
+    padding: 2vh 0;
     & > img {
         max-height: 100%;
         max-width: 40%;
+    }
+
+    & > .notImage {
+        background-color: #ffffff;
+        opacity: .3;
+        padding: 0 2vw;
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        span {
+          font-family: 'Open Sans';
+          font-size: 2vw;
+          color: #595959;
+          text-align: center;
+        }
     }
 }
 

@@ -96,7 +96,7 @@ footer {
             flex-direction: column;
             span {
                 color: #0481c8;
-                font-size: 18px;
+                font-size: 1.8vmin;
                 text-transform: uppercase;
                 font-family: 'Open Sans';
             }
@@ -122,7 +122,7 @@ main {
             list-style: none;
             a, a:link, a:visited, a:hover, a:active {
                 @extend .usableLinksText;
-                font-size: 18px;
+                font-size: 2vmin;
                 line-height: 1.33;
             }
         }

@@ -9,7 +9,7 @@ import { push } from 'react-router-redux';
 
 import classNames from 'classnames';
 
-import { setLocalStream, setCurrentFile, setRemoteStream } from '../../redux/actions/peerConnection';
+import { setLocalStream, setCurrentFile, setCurrentFileError, setRemoteStream } from '../../redux/actions/peerConnection';
 import { setCurrentTerminal } from '../../redux/actions/terminals';
 import { Ringing, Button, LogoSpinner } from '../../../shared/components';
 import { File, TerminalInfo } from '../';
@@ -49,8 +49,8 @@ class Video extends Component {
 
         navigator.mediaDevices.getUserMedia({ video, audio })
             .then(this.gotStream)
-            .catch(function () {
-                alert('getUserMedia() failed');
+            .catch(function (error) {
+                alert('getUserMedia() failed' + error.msg);
             });
     }
 
@@ -61,6 +61,8 @@ class Video extends Component {
             setCurrentTerminalDispatch,
             setRemoteStreamDispatch
         } = this.props;
+
+        this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
 
         this.video && this.video.pause();
 
@@ -95,16 +97,23 @@ class Video extends Component {
     }
 
     handleFileInputChange = async () => {
-        const { currentPeer: { peer }, setCurrentFileDispatch } = this.props;
+        const {
+            currentPeer: { peer },
+            setCurrentFileDispatch,
+            setCurrentFileErrorDispatch
+        } = this.props;
         const file = this.fileInput.files[0];
 
         if (!file) {
             return false;
         }
 
-        const fileDataURL = await peer.getFileDataURL(file);
-
-        setCurrentFileDispatch(fileDataURL);
+        try {
+            const fileDataURL = await peer.getFileDataURL(file);
+            setCurrentFileDispatch(fileDataURL);
+        } catch (error) {
+            setCurrentFileErrorDispatch(error);
+        }
     }
 
     componentDidMount() {
@@ -127,6 +136,8 @@ class Video extends Component {
                 shareButtonEnabled: true
             });
         });
+
+        this.wantCallTimeout = setTimeout(this.hangup, 30000);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -166,7 +177,7 @@ class Video extends Component {
         const {
             intl: { formatMessage },
             currentTerminal,
-            currentPeer: { file }
+            currentPeer: { file, fileError }
         } = this.props;
         const { ready, shareButtonEnabled, remoteStreamLoaded } = this.state;
 
@@ -195,6 +206,7 @@ class Video extends Component {
                             this.setState({ ready: true }, () => {
                                 const { currentPeer: { peer } } = this.props;
 
+                                this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
                                 peer.readyForCall();
                             });
                         }}
@@ -206,7 +218,7 @@ class Video extends Component {
         if (ready) {
             element = (
                 <Fragment>
-                    {file && <File />}
+                    {(file || fileError) && <File />}
                     <div className={styles.video}>
                         <video
                             autoPlay
@@ -270,6 +282,7 @@ class Video extends Component {
 Video.propTypes = {
     currentPeer: PropTypes.shape({
         emitter: PropTypes.shape({}).isRequired,
+        fileError: PropTypes.shape({}),
         peer: PropTypes.shape({}).isRequired,
         localStream: PropTypes.shape({}),
         remoteStream: PropTypes.shape({}),
@@ -279,6 +292,7 @@ Video.propTypes = {
     setRemoteStreamDispatch: PropTypes.func.isRequired,
     setCurrentTerminalDispatch: PropTypes.func.isRequired,
     setCurrentFileDispatch: PropTypes.func.isRequired,
+    setCurrentFileErrorDispatch: PropTypes.func.isRequired,
     pushDispatch: PropTypes.func.isRequired,
     intl: PropTypes.shape({}).isRequired,
     currentTerminal: PropTypes.shape({})
@@ -290,6 +304,7 @@ function mapStoreToProps(store) {
             emitter: store.currentPeer.emitter,
             peer: store.currentPeer.peer,
             file: store.currentPeer.file,
+            fileError: store.currentPeer.fileError,
             localStream: store.currentPeer.localStream,
             remoteStream: store.currentPeer.remoteStream
         },
@@ -303,6 +318,7 @@ function mapDispatchToProps(dispatch) {
         setRemoteStreamDispatch: setRemoteStream,
         setCurrentTerminalDispatch: setCurrentTerminal,
         setCurrentFileDispatch: setCurrentFile,
+        setCurrentFileErrorDispatch: setCurrentFileError,
         pushDispatch: push
     }, dispatch);
 }
