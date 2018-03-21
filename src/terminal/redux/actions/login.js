@@ -18,6 +18,7 @@ export function login(data) {
             }));
 
             window.sessionStorage.setItem('authToken', fetchResponse['access_token']);
+            window.sessionStorage.setItem('refreshToken', fetchResponse['refresh_token']);
         } catch (error) {
             throw error;
         }

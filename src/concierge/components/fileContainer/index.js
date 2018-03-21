@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { FormattedMessage } from 'react-intl';
 
 import { setCurrentFile } from '../../redux/actions/peerConnection';
 import { Button } from '../../../shared/components/';
@@ -47,14 +48,14 @@ class File extends Component {
 
     render() {
         const {
-            currentPeer: { file }
+            currentPeer: { file, error }
         } = this.props;
 
         const { show } = this.state;
 
         return (
             <div className={styles.fileContainer}>
-                <Button
+                {!error && <Button
                     icon={show ? 'showpass' : 'hidepass'}
                     color2={show ? '#75df00' : '#e16950'}
                     color1='transparent'
@@ -63,8 +64,14 @@ class File extends Component {
                     allInside={true}
                     className={styles.button}
                     onClick={this.toggleFile}
-                />
-                <img src={file} />
+                />}
+                {error ?
+                    <div className={styles.notImage}>
+                        <FormattedMessage
+                            id='FileContainer.notImage'
+                            defaultMessage='Selected file is not an image'
+                        />
+                    </div> : <img src={file} />}
                 <span
                     className={styles.close}
                     onClick={this.deinit}
@@ -77,14 +84,16 @@ class File extends Component {
 File.propTypes = {
     currentPeer: PropTypes.shape({
         peer: PropTypes.shape({}).isRequired,
-        file: PropTypes.string
+        file: PropTypes.string,
+        error: PropTypes.shape({})
     }).isRequired,
     setCurrentFileDispatch: PropTypes.func.isRequired
 };
 
 File.defaultProps = {
     currentPeer: {
-        file: ''
+        file: '',
+        error: null
     }
 };
 
@@ -92,7 +101,8 @@ function mapStoreToProps(store) {
     return {
         currentPeer: {
             peer: store.currentPeer.peer,
-            file: store.currentPeer.file
+            file: store.currentPeer.file,
+            error: store.currentPeer.fileError
         }
     };
 }

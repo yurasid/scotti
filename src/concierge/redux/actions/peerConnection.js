@@ -1,7 +1,8 @@
 import {
     LOCAL_STREEM_SET,
     REMOTE_STREEM_SET,
-    CURRENT_FILE_SET
+    CURRENT_FILE_SET,
+    CURRENT_FILE_SET_ERROR
 } from '../actionTypes';
 
 export * from '../../../shared/redux/actions/peerConnection';
@@ -17,6 +18,13 @@ export function setCurrentFile(data) {
     return {
         type: CURRENT_FILE_SET,
         payload: { file: data },
+    };
+}
+
+export function setCurrentFileError(data) {
+    return {
+        type: CURRENT_FILE_SET_ERROR,
+        payload: { fileError: data },
     };
 }
 

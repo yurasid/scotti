@@ -5,7 +5,7 @@ import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 
 import PeerConnection from '../../../shared/utils/peerConnection';
-import { Button, Loader } from '../../../shared/components/';
+import { Button, Loader, FileView } from '../../../shared/components/';
 import LoaderComponent from './components/loader';
 import BusyComponent from './components/busy';
 import OnHold from './components/holdon';
@@ -48,9 +48,11 @@ class Video extends Component {
         this.myvideo && (this.myvideo.srcObject = stream);
 
         this.peerConnection.wantToCall(currentUserId);
+        this.wantCallTimeout = setTimeout(this.busyHandler, 30000);
     }
 
     createOffer = () => {
+        this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
         this.peerConnection.addStream(this.localStream);
         this.peerConnection.createOffer();
     }
@@ -72,6 +74,8 @@ class Video extends Component {
     gotremoteStream = (stream) => {
         const { remoteStream } = this.state;
 
+        this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
+
         if (remoteStream !== stream) {
             this.setState({
                 remoteStream: stream
@@ -92,6 +96,8 @@ class Video extends Component {
     deinit = () => {
         const { history } = this.props;
 
+        this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
+
         this.myvideo && this.myvideo.pause();
         this.conciergevideo && this.conciergevideo.pause();
 
@@ -107,45 +113,52 @@ class Video extends Component {
             this.localStream = null;
         }
 
+        const { callInfo: { call_id } } = this.peerConnection;
+
         this.peerConnection && this.peerConnection.close();
 
-        const pushState = this.callId ? { call_id: this.callId } : { step: -1 };
-
-        delete this.callId;
+        const pushState = call_id ? { call_id } : { step: -1 };
 
         history.push('/rate', pushState);
     }
 
     hangup = () => {
-        const { currentPeer: { emitter } } = this.props;
+        const {
+            currentPeer: {
+                emitter
+            }
+        } = this.props;
+
+        const { callInfo: { call_id } } = this.peerConnection;
 
         emitter.sendMessage({
             type: 'hang_up',
-            call_id: this.callId
+            call_id
         });
 
         this.deinit();
     }
 
-    initEvents = (emitter) => {
-        let arrayOfChunks = [];
+    busyHandler = () => {
+        this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
+        this.setState({
+            busy: true
+        });
+    }
 
+    initEvents = (emitter) => {
         emitter.addListener('ready_call', this.createOffer);
         emitter.addListener('remote_stream', this.gotremoteStream);
-        emitter.addListener('call_started', (msg) => {
-            this.callId = msg['call_id'];
-        });
+
         emitter.addListener('hang_up', () => {
+            this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
             this.deinit();
         });
 
-        emitter.addListener('busy', () => {
-            this.setState({
-                busy: true
-            });
-        });
+        emitter.addListener('busy', this.busyHandler);
 
         emitter.addListener('concierge_offline', () => {
+            this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
             this.setState({
                 busy: true
             });
@@ -155,29 +168,6 @@ class Video extends Component {
             this.setState({
                 onhold: state
             }, this.setRemoteVideostream);
-        });
-
-        emitter.addListener('dc_message', (event) => {
-            let data = {};
-
-            try {
-                data = JSON.parse(event.data);
-            } catch (error) {
-                return false;
-            }
-
-            const { message, last } = data;
-
-            arrayOfChunks.push(message);
-
-            if (last) {
-                const received = arrayOfChunks.join('');
-                arrayOfChunks = [];
-
-                this.setState({
-                    imgUrl: received
-                });
-            }
         });
     }
 
@@ -235,7 +225,7 @@ class Video extends Component {
 
     render() {
         const { intl: { formatMessage } } = this.props;
-        const { error, video, remoteStream, remoteStreamLoaded, busy, imgUrl, onhold } = this.state;
+        const { error, video, remoteStream, remoteStreamLoaded, busy, onhold } = this.state;
 
         return (
             <div className={styles.mainContainer}>
@@ -264,11 +254,11 @@ class Video extends Component {
                                     </Fragment>
                                 ) :
                                     <div>{error.toString()}</div>}
-                                {imgUrl &&
-                                    <div className={styles.picture}>
-                                        <img src={imgUrl} />
-                                    </div>
-                                }
+                                <FileView
+                                    className={styles.picture}
+                                    showOnFile={true}
+                                    peer={this.peerConnection}
+                                />
                             </Fragment>
                         </Loader>
                     </Loader>

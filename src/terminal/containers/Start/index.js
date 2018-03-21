@@ -25,6 +25,29 @@ class Start extends Component {
         if (!emitter) {
             return !creating && initEmitterDispatch('terminal');
         }
+
+        emitter.addListener('unauthenticated', () => {
+            this.reinitSockets();
+        });
+
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+
+        if (connection) {
+            connection.onchange = (event) => {
+                console.log('changed', event); // eslint-disable-line
+                return this.reinitSockets(true);
+            };
+        }
+    }
+
+    reinitSockets = async (timeout) => {
+        const { history, currentPeer: { emitter } } = this.props;
+
+        try {
+            emitter.reInitWS(timeout);
+        } catch (error) {
+            return history.push('/error');
+        }
     }
 
     startCall = async () => {
@@ -45,6 +68,10 @@ class Start extends Component {
         const { currentPeer: { emitter } } = nextProps;
 
         !emitter && this.init(nextProps);
+    }
+
+    componentWillUnmount() {
+        this.reinitTimeout && clearTimeout(this.reinitTimeout);
     }
 
     render() {

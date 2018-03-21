@@ -24,7 +24,7 @@ export function isUnauthorized(error) {
 export async function handleHttpError(error, refreshUrl) {
     const refreshToken = window.sessionStorage.getItem('refreshToken');
 
-    if (isUnauthorized(error) && refreshToken && refreshUrl) {
+    if (isUnauthorized(error) && refreshToken && refreshToken !== 'undefined' && refreshUrl) {
         const refreshResponse = await localRequest(refreshUrl, generateHttpOptions({
             method: 'POST',
             headers: {
