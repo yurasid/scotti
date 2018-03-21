@@ -47,9 +47,12 @@ const LoginForm = ({
             return error && clearSubmitErrors();
         }}>
             {error && <span className={styles.formError}>
-                {error.id ? (
-                    <FormattedMessage {...error} />
-                ) : error}
+                {error.id && <FormattedMessage {...error} />}
+                {error === 'Unauthorized' ?
+                    <FormattedMessage
+                        id='Login.unauthorized'
+                        defaultMessage='The credentials are incorrect'
+                    /> : error}
             </span>}
             <Field name='username' type='text'
                 component={renderField} label={formatMessage(messages.username)}

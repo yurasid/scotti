@@ -9,7 +9,6 @@ import { logout } from '../../redux/actions/auth';
 import { setCurrentPeer, setRemoteStream, initEmitter, setCurrentEmitter } from '../../redux/actions/peerConnection';
 
 import PeerConnection from '../../../shared/utils/peerConnection';
-import { handleHttpError } from '../../../shared/utils/http';
 import { fetchCurrentTerminal } from '../../redux/actions/terminals';
 
 import { Footer, Header, MainContainer, Video, LeftAside } from '../../components/';
@@ -87,14 +86,11 @@ class Home extends Component {
         setCurrentPeerDispatch(null);
     }
 
-    reinitSockets = async () => {
+    reinitSockets = async (timeout) => {
         const { currentPeer: { emitter } } = this.props;
-        const unauthenticatedError = new Error();
-        unauthenticatedError.code = 401;
 
         try {
-            await handleHttpError(unauthenticatedError, '/api/concierge/refresh');
-            return emitter.initWS();
+            emitter.reInitWS(timeout);
         } catch (error) {
             return console.error(error); // eslint-disable-line
         }
@@ -122,14 +118,24 @@ class Home extends Component {
                     setRemoteStreamDispatch(stream);
                 }
             }),
-            ['unauthenticated']: emitter.addListener('unauthenticated', this.reinitSockets),
+            ['unauthenticated']: emitter.addListener('unauthenticated', () => {
+                this.reinitSockets();
+            }),
             ['authenticated']: emitter.addListener('authenticated', () => {
                 const peerConnection = new PeerConnection(emitter);
-        
+
                 setCurrentPeerDispatch(peerConnection);
             })
         };
 
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+
+        if (connection) {
+            connection.onchange = (event) => {
+                console.log('changed', event); // eslint-disable-line
+                return this.reinitSockets(true);
+            };
+        }
     }
 
     componentWillMount() {

@@ -49,8 +49,8 @@ class Video extends Component {
 
         navigator.mediaDevices.getUserMedia({ video, audio })
             .then(this.gotStream)
-            .catch(function () {
-                alert('getUserMedia() failed');
+            .catch(function (error) {
+                alert('getUserMedia() failed' + error.msg);
             });
     }
 
@@ -61,6 +61,8 @@ class Video extends Component {
             setCurrentTerminalDispatch,
             setRemoteStreamDispatch
         } = this.props;
+
+        this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
 
         this.video && this.video.pause();
 
@@ -134,6 +136,8 @@ class Video extends Component {
                 shareButtonEnabled: true
             });
         });
+
+        this.wantCallTimeout = setTimeout(this.hangup, 30000);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -202,6 +206,7 @@ class Video extends Component {
                             this.setState({ ready: true }, () => {
                                 const { currentPeer: { peer } } = this.props;
 
+                                this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
                                 peer.readyForCall();
                             });
                         }}
