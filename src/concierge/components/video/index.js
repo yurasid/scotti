@@ -44,13 +44,54 @@ class Video extends Component {
         setLocalStreamDispatch(stream);
     }
 
+    errorHandler(error, constraints) {
+        function errorMsg(msg, error) {
+            alert(msg, ' ', error);
+        }
+
+        if (error.name === 'ConstraintNotSatisfiedError') {
+            errorMsg('The resolution ' + constraints.video.width.exact + 'x' +
+                constraints.video.width.exact + ' px is not supported by your device.');
+        } else if (error.name === 'PermissionDeniedError') {
+            errorMsg('Permissions have not been granted to use your camera and ' +
+                'microphone, you need to allow the page access to your devices in ' +
+                'order for the demo to work.');
+        }
+        errorMsg('getUserMedia error: ' + error.name, error);
+    }
+
     start() {
         const { video, audio } = this.state;
+        const constraints = window.constraints = {
+            audio,
+            video
+        };
 
-        navigator.mediaDevices.getUserMedia({ video, audio })
+        if (navigator.mediaDevices.getUserMedia === undefined) {
+            navigator.mediaDevices.getUserMedia = function (constraints) {
+
+                const getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+                if (!getUserMedia) {
+                    return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                }
+
+                return new Promise(function (resolve, reject) {
+                    getUserMedia.call(navigator, constraints, resolve, reject);
+                });
+            };
+        }
+
+        navigator.mediaDevices.getUserMedia(constraints)
             .then(this.gotStream)
-            .catch(function (error) {
-                alert('getUserMedia() failed' + error.msg);
+            .catch((error) => {
+                if (!this.allreadyError) {
+                    this.allreadyError = true;
+                    return this.start();
+                }
+
+                this.allreadyError = false;
+                this.errorHandler(error, constraints);
             });
     }
 

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { FormattedMessage } from 'react-intl';
 
-import { setCurrentFile } from '../../redux/actions/peerConnection';
+import { setCurrentFile, setCurrentFileError } from '../../redux/actions/peerConnection';
 import { Button } from '../../../shared/components/';
 
 import styles from './index.scss';
@@ -35,11 +35,13 @@ class File extends Component {
     deinit = async () => {
         const {
             setCurrentFileDispatch,
+            setCurrentFileErrorDispatch,
             currentPeer: { peer }
         } = this.props;
 
         peer.sendFile(undefined);
         setCurrentFileDispatch(null);
+        setCurrentFileErrorDispatch(null);
     }
 
     componentWillUnmount() {
@@ -87,7 +89,8 @@ File.propTypes = {
         file: PropTypes.string,
         error: PropTypes.shape({})
     }).isRequired,
-    setCurrentFileDispatch: PropTypes.func.isRequired
+    setCurrentFileDispatch: PropTypes.func.isRequired,
+    setCurrentFileErrorDispatch: PropTypes.func.isRequired
 };
 
 File.defaultProps = {
@@ -109,6 +112,7 @@ function mapStoreToProps(store) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
+        setCurrentFileErrorDispatch: setCurrentFileError,
         setCurrentFileDispatch: setCurrentFile
     }, dispatch);
 }
