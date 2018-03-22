@@ -12,6 +12,7 @@ const devExtendConfig = {
             'process.env.NODE_ENV': JSON.stringify('development')
         })
     ],
+    target: 'electron',
     module: {
         rules: [
             {
@@ -30,6 +31,17 @@ const devExtendConfig = {
             },
             {
                 test: /\.(png|jpe?g|gif|ttf|woff|woff2|eot|otf)$/i,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            outputPath: '/assets/'
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.mp3$/,
                 use: [
                     {
                         loader: 'file-loader',

@@ -4,6 +4,7 @@ const path = require('path');
 const os = require('os');
 
 const app = electron.app;
+const ipcMain = electron.ipcMain;
 const BrowserWindow = electron.BrowserWindow;
 
 require('./server.js');
@@ -19,12 +20,13 @@ function createWindow() {
         show: false,
         maximizable: false,
         resizable: true,
+        titleBarStyle: 'hiddenInset',
         title: 'Concierge App',
         autoHideMenuBar: true,
         icon: path.resolve(__dirname, platform === 'win32' ? './icons/win/icon.ico' : './icons/png/64.png')
     });
-    
-    mainWindow.once('ready-to-show', function() {
+
+    mainWindow.once('ready-to-show', function () {
         mainWindow.show();
     });
 
@@ -35,6 +37,21 @@ function createWindow() {
     mainWindow.on('closed', function () {
         mainWindow = null;
     });
+    
+    ipcMain.on('incoming-call', () => {
+        let flash = true;
+        this.incomInterval = setInterval(() => {
+            mainWindow.flashFrame(flash);
+            flash = !flash;
+        }, 700);
+    });
+
+    ipcMain.on('call-started', () => {
+        mainWindow.flashFrame(false);
+        this.incomInterval && clearInterval(this.incomInterval);
+    });
+
+    mainWindow.flashFrame(false);
 }
 
 app.on('ready', createWindow);

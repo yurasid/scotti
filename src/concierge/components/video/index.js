@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
+import { ipcRenderer } from 'electron';
+
 import { defineMessages, injectIntl } from 'react-intl';
 
 import { connect } from 'react-redux';
@@ -34,6 +36,8 @@ class Video extends Component {
             shareButtonEnabled: false,
             remoteStreamLoaded: false
         };
+
+        ipcRenderer.send('incoming-call');
     }
 
     gotStream = (stream) => {
@@ -230,6 +234,20 @@ class Video extends Component {
                     color='#75df00'
                     active={true}
                 />
+                <audio
+                    autoPlay='autoplay'
+                    loop='true'
+                >
+                    <source
+                        src={require('../../../shared/audio/incoming_call.mp3')} type='audio/mpeg'
+                    />
+                    <embed
+                        hidden='true'
+                        autostart='true'
+                        loop='true'
+                        src={require('../../../shared/audio/incoming_call.mp3')}
+                    />
+                </audio>
                 <div className={styles.controlPanel}>
                     <Button
                         icon='showvideo'
@@ -249,6 +267,8 @@ class Video extends Component {
 
                                 this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
                                 peer.readyForCall();
+                            }, () => {
+                                ipcRenderer.send('call-started');
                             });
                         }}
                     />
