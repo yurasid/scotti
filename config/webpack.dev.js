@@ -12,7 +12,6 @@ const devExtendConfig = {
             'process.env.NODE_ENV': JSON.stringify('development')
         })
     ],
-    target: 'electron',
     module: {
         rules: [
             {
