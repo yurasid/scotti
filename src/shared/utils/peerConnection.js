@@ -302,6 +302,70 @@ class PeerConnection {
         });
 
     }
+
+    getMedia = async (constraints) => {
+        if (navigator.mediaDevices.getUserMedia === undefined) {
+            navigator.mediaDevices.getUserMedia = function (constraints) {
+                const getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+                if (!getUserMedia) {
+                    return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                }
+
+                return new Promise(function (resolve, reject) {
+                    getUserMedia.call(navigator, constraints, resolve, reject);
+                });
+            };
+        }
+
+        async function findMedia(videoDevices) {
+            let index = 0;
+            let found;
+
+            while (videoDevices.length >= index && !found) {
+                const videoDevice = videoDevices[index];
+                const { deviceId } = videoDevice;
+
+                const { video, ...elseConstraints } = constraints;
+
+                const extendVideo = {
+                    mandatory: {
+                        chromeMediaSourceId: deviceId,
+                    }
+                };
+
+                const baseVideo = video !== null && typeof video === 'object' && video;
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        ...elseConstraints,
+                        video: video && Object.assign({}, baseVideo || {}, extendVideo)
+                    });
+
+                    found = true;
+
+                    return stream;
+                } catch (error) {
+                    if (index === videoDevices.length) {
+                        throw error;
+                    }
+                }
+
+                index++;
+            }
+        }
+
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+            return findMedia(videoDevices);
+        } catch (error) {
+            throw error;
+        }
+
+
+    }
 }
 
 export default PeerConnection;

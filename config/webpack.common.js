@@ -114,6 +114,7 @@ const defConfig = {
 
 module.exports = {
     conciergeCommon: merge(defConfig, {
+        // target: 'electron',
         name: 'concierge',
         entry: [/* hotReloading,  */'babel-polyfill', path.join(constants.SRC, '/concierge/app.js')],
         output: {
@@ -139,6 +140,7 @@ module.exports = {
         ]
     }),
     terminalCommon: merge(defConfig, {
+        // target: 'electron',
         name: 'terminal',
         entry: [/* hotReloading,  */'babel-polyfill', path.join(constants.SRC, '/terminal/app.js')],
         output: {

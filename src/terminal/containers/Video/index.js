@@ -83,14 +83,41 @@ class Video extends Component {
         }
     }
 
-    start() {
-        const { video, audio } = this.state;
+    errorHandler(error, constraints) {
+        function errorMsg(msg, error) {
+            alert(msg, ' ', error);
+        }
 
-        navigator.mediaDevices.getUserMedia({ video, audio })
-            .then(this.gotStream)
-            .catch(function (err) {
-                alert(err.toString());
-            });
+        if (error.name === 'ConstraintNotSatisfiedError') {
+            errorMsg('The resolution ' + constraints.video.width.exact + 'x' +
+                constraints.video.width.exact + ' px is not supported by your device.');
+        } else if (error.name === 'PermissionDeniedError') {
+            errorMsg('Permissions have not been granted to use your camera and ' +
+                'microphone, you need to allow the page access to your devices in ' +
+                'order for the demo to work.');
+        }
+        errorMsg('getUserMedia error: ' + error.name, error);
+    }
+
+    start = async () => {
+        const { video, audio } = this.state;
+        const constraints = window.constraints = {
+            audio,
+            video
+        };
+
+        try {
+            const stream = await this.peerConnection.getMedia(constraints);
+            this.gotStream(stream);
+        } catch (error) {
+            if (!this.allreadyError) {
+                this.allreadyError = true;
+                return this.start();
+            }
+
+            this.allreadyError = false;
+            this.errorHandler(error, constraints);
+        }
     }
 
     deinit = () => {
