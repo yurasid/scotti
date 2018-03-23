@@ -37,18 +37,13 @@ function createWindow() {
     mainWindow.on('closed', function () {
         mainWindow = null;
     });
-    
+
     ipcMain.on('incoming-call', () => {
-        let flash = true;
-        this.incomInterval = setInterval(() => {
-            mainWindow.flashFrame(flash);
-            flash = !flash;
-        }, 700);
+        mainWindow.flashFrame(flash);
     });
 
     ipcMain.on('call-started', () => {
         mainWindow.flashFrame(false);
-        this.incomInterval && clearInterval(this.incomInterval);
     });
 
     mainWindow.flashFrame(false);
