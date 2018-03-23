@@ -39,7 +39,7 @@ function createWindow() {
     });
 
     ipcMain.on('incoming-call', () => {
-        mainWindow.flashFrame(flash);
+        mainWindow.flashFrame(true);
     });
 
     ipcMain.on('call-started', () => {
