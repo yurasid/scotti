@@ -80,6 +80,7 @@ nav {
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
+    min-height: calc(1.8vmin + 70px);
 }
 
 header {

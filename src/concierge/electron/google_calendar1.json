@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "airy-media-199306",
+  "private_key_id": "e8a65812e7bf9e809f275d47e519a2b13b2699c9",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCrd9nid5CXoGWU\nD/Ela/uG3Y9sj8Nr9gyJwWmEQGvm4TdCGwSq/ZtX73l5NDsEsMzBQfZ0YM/J8hUP\nnPbsXJo0A+64FGAr3z6iwm+uVnDl6rHgj8PsusqtyUClbG/LA05U8iOw0HIspV1C\nokbXvWCYJ3wyL3eiGT3Wdxc7pOhAVPoaZ4gXrq1EeJbtQES8kYE+ur+5gTEyqOxP\ngsSFH/1svza9O2X1TfpVORwOUdozgDjOggvUzah2gVVILq8NMmba+jvDxfDAjWlY\nFTxW1MEtZbHEnZs6i++9bT107cGEBJpoiKpr2/VkxcACyGHhVuuxpQZzo36LDddv\nTWcd4TqBAgMBAAECggEAE7ve7SPylajFmAU/rR1g3NQp+gYPqSCvr7j9QlXBtVgt\nKmP+pQk79CJg+hSLSE5qukEzspAjyeudBed8OZasvpjHRBNAQDxYspWrEcbsBmH8\n58nT9C5JPjf/wyoYMaanQLp/Zg2PXlkHwy/29ERc1hYRQptY6uR5y/F30Ir5mdGd\nJ9VlDT3HjuSoDZmH5/7RYRxh24Ea6o6KnYyw1+zEHLEsJ1GH6hDBbsztBU+3dMA2\nV2PULRhGFZqPzbZ7bwPHz4uFWkQJ3t+VhrglnvA982Cc+RqiQe2ZJyHSrhaqZJss\natMhlYD5ObRoXstZGJfLhk/QuI9iAaUvTNwpSqTCYQKBgQDwxfIMlSZXOSZmHTHq\nSD0Ndgdnn/Mzf5qcsvc1xmjFe4piSv/Sldz9EfIakLNpFCaibNs+bZFup5n8Zgf7\n0qahwZ1qohf6sMpY33gp87a0v3Bn/0KINjkwOPog0tC9RrswrGIxX0B3lts7gnuh\n2no7utchFvQCT8lPzKYeO0aeqQKBgQC2T+ALS9v9kjZYCjGz41fic3dArzOo5HEF\nxQ9wYX42nrP+vK0RBOXh1iluq7yW4geiPYhWi2JV4a9hsuDt7gTK3/2zY7cnkUhJ\nQtha7uQdcmb6hz13KF+b58u4oQyoWhVdG+VtkpZo0qEeHH0nWGAEoFP6j/vZq44U\n8nvnKJ9cGQKBgQCc35vRbuxIMEhAiA0ZpG+C8b/pWGHQz/cg2coQE3H4GYIUgOEl\nh9cwXBzuChGbCTIS6fH/Psxe2HyP4rqY7Kr9AXVbILmW8NEmDpPwYYZNRd4rJDlp\nHkssjDMMZ87xQ8B6+hYQLQuH35Z/s4hx8DNr71Rzjsz1JJ75i1FAqUZd4QKBgDSG\nuuRGTPG36JRhC4TqoW2LGva2A8pLVwz0g8g7LqQKAY4JSku2/4ybqYBLVqCaKtzh\noaBdtE1OIruhUBD9HMBe3LeMqT5rK0qASdmZLnwVc/oGcP0d0r4WgKmHLSBsI++Z\nk/aH33IADY+hYaWuXqu2jbuJNGS4es0qN+yX1aIxAoGALZxKk/IPFMiEGoutWZ3c\n4MDVVRLTAbwIVyiwYZH8Z4ZgBy0ni9a8cRUNWg22uU41hSNXFon0GaCDDVHUk7if\n4O6hapyR8XqirsEZlQ2NKyaIKRSXMWJjEPYw31MWNI10MA7xSDa1a65apivQt26d\nfCJGcIAEpG2kz1kYDRwZOPg=\n-----END PRIVATE KEY-----\n",
+  "client_email": "calendar@airy-media-199306.iam.gserviceaccount.com",
+  "client_id": "102845640655428151138",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/calendar%40airy-media-199306.iam.gserviceaccount.com"
+}
