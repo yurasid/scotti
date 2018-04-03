@@ -95,9 +95,6 @@ class PeerConnection {
     }
 
     subscribeEvents = () => {
-        this.emitter.addListener('call_started', (msg) => {
-            this.callInfo = msg;
-        });
         this.emitter.addListener('offer', this.createAnswer);
         this.emitter.addListener('answer', (msg) => {
             this.pc.setRemoteDescription(new RTCSessionDescription(msg));
@@ -165,8 +162,6 @@ class PeerConnection {
             this.pc.close();
             this.pc = null;
         }
-
-        this.callInfo = null;
     }
 
     readyForCall() {
@@ -214,14 +209,10 @@ class PeerConnection {
 
         this.pc.createOffer(offerOptions)
             .then((desc) => {
-                const { callInfo: { concierge_connection_id } } = this;
                 this.candidates = [];
                 this.registerAtOnce = false;
                 this.pc.setLocalDescription(desc);
-                this.emitter.sendMessage({
-                    concierge_connection_id,
-                    ...desc.toJSON()
-                });
+                this.emitter.sendMessage(desc);
             }, errorHandler('createOffer'));
     }
 

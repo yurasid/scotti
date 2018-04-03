@@ -11,7 +11,7 @@ import { setCurrentPeer, setRemoteStream, initEmitter, setCurrentEmitter } from 
 import PeerConnection from '../../../shared/utils/peerConnection';
 import { fetchCurrentTerminal } from '../../redux/actions/terminals';
 
-import { Footer, Header, MainContainer, Video, LeftAside } from '../../components/';
+import { Footer, Header, MainContainer, Video, LeftAside, Calendar } from '../../components/';
 import setCurrentPopup from '../../redux/actions/popup';
 
 import './index.global.scss';
@@ -173,7 +173,7 @@ class Home extends Component {
                 <main>
                     <LeftAside />
                     <MainContainer>
-                        {showIncomingCall ? <Video /> : <Fragment />}
+                        {showIncomingCall ? <Video /> : <Calendar />}
                     </MainContainer>
                     <aside className='block16 right blue'>
                         <h2>

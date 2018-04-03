@@ -48,7 +48,17 @@ const defConfig = {
                 ]
             },
             {
-                test: /\.css$/,
+                test: /\.global\.css$/,
+                use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        { loader: 'css-loader', query: { modules: false, sourceMaps: true } },
+                        'postcss-loader'
+                    ]
+                }))
+            },
+            {
+                test: /(^((?!(global)).)*)\.css$/,
                 use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [

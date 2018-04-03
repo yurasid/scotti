@@ -140,7 +140,7 @@ class Video extends Component {
             this.localStream = null;
         }
 
-        const { callInfo: { call_id } } = this.peerConnection;
+        const { call_id } = this.callInfo || {};
 
         this.peerConnection && this.peerConnection.close();
 
@@ -156,11 +156,8 @@ class Video extends Component {
             }
         } = this.props;
 
-        const { callInfo: { call_id } } = this.peerConnection;
-
         emitter.sendMessage({
-            type: 'hang_up',
-            call_id
+            type: 'hang_up'
         });
 
         this.deinit();
@@ -176,6 +173,10 @@ class Video extends Component {
     initEvents = (emitter) => {
         emitter.addListener('ready_call', this.createOffer);
         emitter.addListener('remote_stream', this.gotremoteStream);
+
+        emitter.addListener('call_started', (msg) => {
+            this.callInfo = msg;
+        });
 
         emitter.addListener('hang_up', () => {
             this.wantCallTimeout && clearTimeout(this.wantCallTimeout);

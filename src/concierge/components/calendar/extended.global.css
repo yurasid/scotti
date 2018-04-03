@@ -1,0 +1,156 @@
+.rbc-toolbar {
+    position: relative;
+}
+
+.rbc-event-wrapper .rbc-event {
+    color: currentColor;
+    background-color: currentColor;
+}
+
+.rbc-event-wrapper .rbc-event .rbc-event-content {
+    color: white;
+}
+
+.rbc-event-wrapper .rbc-event .rbc-event-content .startTime{
+    margin-right: .5vw;
+}
+
+.popupOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.popupContainer {
+    z-index: 999;
+    position: absolute;
+    width: 20vw;
+    padding: 0 .4vw;
+    box-sizing: border-box;
+}
+
+.popupContainer .popupWrapper {
+    font-family: 'Open Sans';
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: 0px 6px 20px 3px rgba(0, 0, 0, .2);
+}
+
+.popupContainer .titleBlock {
+    background-color: currentColor;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid transparent;
+}
+
+.popupContainer .contentBlock {
+    padding: .5vh 1vw;
+    color: #212121;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-top: 0;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1vh;
+}
+
+.popupContainer .titleBlock span {
+    color: white;
+    margin: .5vh 1vw;
+    font-weight: 600;
+}
+
+.popupContainer .contentBlock span {
+    margin-top: .5vh;
+    font-size: .7vw;
+}
+
+.popupContainer .contentBlock .description {
+    margin-top: 2vh;
+    max-height: 80%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.popupContainer .contentBlock .description ol {
+    list-style-type: decimal;
+    list-style-position: inside;
+}
+
+.popupContainer .contentBlock .attachments {
+    list-style: none;
+    list-style-position: inside;
+}
+
+.popupContainer .contentBlock .attachments li {
+    margin: 0 8px 8px 0;
+    border-radius: 2px;
+    height: 28px;
+    max-width: 45%;
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.2);
+    float: left;
+    display: inline-flex;
+    align-items: center;
+}
+
+.popupContainer .contentBlock .attachments li a {
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+.popupContainer .contentBlock .attachments li a img {
+    height: 16px;
+    margin-right: 8px;
+    margin-left: 8px;
+    flex: 0 0 16px;
+}
+
+.popupContainer .contentBlock .attachments li a span {
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.popupContainer .contentBlock .attachments li:last-child {
+    margin-right: 16px;
+}
+
+.popupContainer .titleBlock .closeBtn {
+    position: relative;
+    align-self: flex-end;
+    display: inline-block;
+    width: 1vmin;
+    height: 1vmin;
+    overflow: hidden;
+    margin: .5vmin;
+}
+
+.popupContainer .titleBlock .closeBtn::before,
+.popupContainer .titleBlock .closeBtn::after {
+    content: '';
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    background: currentColor;
+}
+
+.popupContainer .titleBlock .closeBtn::before {
+    transform: rotate(45deg);
+}
+
+.popupContainer .titleBlock .closeBtn::after {
+    transform: rotate(-45deg);
+}

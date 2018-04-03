@@ -9,6 +9,7 @@ import LeftAside from './leftAside/';
 import File from './fileContainer/';
 import TerminalsList from './listOfTerminals/';
 import TerminalInfo from './terminalInfo/';
+import Calendar from './calendar/';
 
 export {
     CopyRight,
@@ -21,5 +22,6 @@ export {
     Video,
     File,
     TerminalsList,
-    TerminalInfo
+    TerminalInfo,
+    Calendar
 };
