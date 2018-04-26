@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, defineMessages, injectIntl } from 'react-intl';
 import classNames from 'classnames';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 const messages = defineMessages({
     standBy: {

@@ -2,7 +2,8 @@ import moment from 'moment';
 
 import {
     CURRENT_EVENTS_FETCHED,
-    CURRENT_SELECTED_EVENT
+    CURRENT_SELECTED_EVENT,
+    SET_SHARE_EVENTS
 } from '../actionTypes';
 
 import {
@@ -16,6 +17,13 @@ const uri = '/calendar';
 export function setSelectedEvent(payload) {
     return {
         type: CURRENT_SELECTED_EVENT,
+        payload
+    };
+}
+
+export function setShareEvents(payload) {
+    return {
+        type: SET_SHARE_EVENTS,
         payload
     };
 }

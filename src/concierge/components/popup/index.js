@@ -6,7 +6,7 @@ import classNames from 'classnames';
 
 import setCurrentPopup from '../../redux/actions/popup';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 const Popup = ({
     children,

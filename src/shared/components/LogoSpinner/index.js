@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import { Spinner, Icon } from '../';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class Loader extends Component {
     constructor() {

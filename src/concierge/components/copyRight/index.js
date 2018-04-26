@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '../../../shared/components/';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 const CopyRight = ({
     height,

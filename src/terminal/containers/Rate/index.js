@@ -7,7 +7,7 @@ import { rateCall } from '../../redux/actions/peerConnection';
 
 import { Button } from '../../../shared/components';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 import Question from './components/Question';
 import Exit from './components/ThankExit';

@@ -5,8 +5,9 @@ import { injectIntl, defineMessages } from 'react-intl';
 
 import { MenuItem, Popup } from '../';
 import TerminalsList from '../listOfTerminals/';
+import Calendar from '../calendar/';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 const messages = defineMessages({
     storesLocation: {
@@ -24,6 +25,10 @@ const messages = defineMessages({
     emergency: {
         id: 'Dashboard.menu.emergency',
         defaultMessage: 'Emergency'
+    },
+    calendar: {
+        id: 'Dashboard.menu.calendar',
+        defaultMessage: 'Calendar'
     }
 });
 
@@ -31,15 +36,23 @@ const menu = [
     { component: 'storesLocation', message: messages.storesLocation },
     { component: '', message: messages.promotion },
     { component: '', message: messages.barsRestraunts },
-    { component: '', message: messages.emergency }
+    { component: '', message: messages.emergency },
+    { component: 'calendar', message: messages.calendar }
 ];
 
 const components = {
     storesLocation: (<div>Testing</div>),
-    terminalsList: TerminalsList
+    terminalsList: TerminalsList,
+    calendar: Calendar
 };
 
 class MainContainer extends Component {
+    static propTypes = {
+        intl: PropTypes.shape({}).isRequired,
+        children: PropTypes.element,
+        currentPopup: PropTypes.string
+    }
+
     constructor() {
         super();
     }
@@ -80,12 +93,6 @@ class MainContainer extends Component {
         );
     }
 }
-
-MainContainer.propTypes = {
-    intl: PropTypes.shape({}).isRequired,
-    children: PropTypes.element,
-    currentPopup: PropTypes.string
-};
 
 function mapStoreToProps(store) {
     return {

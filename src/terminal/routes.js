@@ -10,7 +10,7 @@ import ErrorContainer from './containers/Error/';
 import Call from './containers/Video/';
 import Rate from './containers/Rate/';
 
-require('./index.global.scss');
+import './index.scss';
 
 const Router = () => (
     <Fragment>

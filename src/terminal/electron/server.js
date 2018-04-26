@@ -109,4 +109,5 @@ app.get('*', (req, res) => res.sendFile(path.join(__dirname, '/index.html')));
 
 app.listen(9001, () => {
     console.log('React Terminal part at: http://localhost:9001'); // eslint-disable-line no-console
-}); */
+});
+ */

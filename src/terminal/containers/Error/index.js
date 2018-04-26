@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import { Icon } from '../../../shared/components/';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class ErrorContainer extends Component {
     constructor() {

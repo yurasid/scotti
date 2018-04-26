@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Icon } from '../';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class Button extends Component {
     constructor() {

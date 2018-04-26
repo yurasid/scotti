@@ -8,9 +8,26 @@ import { FormattedMessage } from 'react-intl';
 import { setCurrentFile, setCurrentFileError } from '../../redux/actions/peerConnection';
 import { Button } from '../../../shared/components/';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class File extends Component {
+    static propTypes = {
+        currentPeer: PropTypes.shape({
+            peer: PropTypes.shape({}).isRequired,
+            file: PropTypes.string,
+            error: PropTypes.shape({})
+        }).isRequired,
+        setCurrentFileDispatch: PropTypes.func.isRequired,
+        setCurrentFileErrorDispatch: PropTypes.func.isRequired
+    }
+
+    static defaultProps = {
+        currentPeer: {
+            file: '',
+            error: null
+        }
+    }
+
     constructor() {
         super();
 
@@ -82,23 +99,6 @@ class File extends Component {
         );
     }
 }
-
-File.propTypes = {
-    currentPeer: PropTypes.shape({
-        peer: PropTypes.shape({}).isRequired,
-        file: PropTypes.string,
-        error: PropTypes.shape({})
-    }).isRequired,
-    setCurrentFileDispatch: PropTypes.func.isRequired,
-    setCurrentFileErrorDispatch: PropTypes.func.isRequired
-};
-
-File.defaultProps = {
-    currentPeer: {
-        file: '',
-        error: null
-    }
-};
 
 function mapStoreToProps(store) {
     return {

@@ -7,9 +7,27 @@ import { bindActionCreators } from 'redux';
 import { Icon } from '../../../shared/components';
 import setCurrentPopup from '../../redux/actions/popup';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class MenuItem extends Component {
+    static propTypes = {
+        onClick: PropTypes.func,
+        setCurrentPopupDispatch: PropTypes.func.isRequired,
+        text: PropTypes.string,
+        icon: PropTypes.string,
+        name: PropTypes.string,
+        active: PropTypes.bool,
+        currentPopup: PropTypes.string,
+        className: PropTypes.string
+    };
+    
+    static defaultProps = {
+        text: 'Unknown item',
+        name: 'Unknown item',
+        active: false,
+        onClick: () => { }
+    }
+
     constructor() {
         super();
 
@@ -93,24 +111,6 @@ class MenuItem extends Component {
         );
     }
 }
-
-MenuItem.propTypes = {
-    onClick: PropTypes.func,
-    setCurrentPopupDispatch: PropTypes.func.isRequired,
-    text: PropTypes.string,
-    icon: PropTypes.string,
-    name: PropTypes.string,
-    active: PropTypes.bool,
-    currentPopup: PropTypes.string,
-    className: PropTypes.string
-};
-
-MenuItem.defaultProps = {
-    text: 'Unknown item',
-    name: 'Unknown item',
-    active: false,
-    onClick: () => { }
-};
 
 function mapStoreToProps(store) {
     return {

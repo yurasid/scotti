@@ -11,7 +11,7 @@ import LoginForm from './Form';
 import { Icon } from '../../../shared/components/';
 import CopyRight from '../../components/copyRight/';
 
-import loginStyles from './index.scss';
+import loginStyles from './index.m.scss';
 
 class Login extends Component {
     onEnterPress = (e) => {

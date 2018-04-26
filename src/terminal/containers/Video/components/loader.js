@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { LogoSpinner } from '../../../../shared/components/';
 
-import styles from './../index.scss';
+import styles from './../index.m.scss';
 
 const LoaderComponent = () => (
     <Fragment>

@@ -5,73 +5,34 @@ import { bindActionCreators } from 'redux';
 import { FormattedMessage } from 'react-intl';
 
 import { Ringing } from '../../../shared/components';
-import { initEmitter } from '../../redux/actions/peerConnection';
 
 import { fetchCurrentUser } from '../../redux/actions/user';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class Start extends Component {
-
-    init = async (props) => {
-        const {
-            initEmitterDispatch,
-            currentPeer: {
-                emitter,
-                creating
-            }
-        } = props || this.props;
-
-        if (!emitter) {
-            return !creating && initEmitterDispatch('terminal');
-        }
-
-        emitter.addListener('unauthenticated', () => {
-            this.reinitSockets();
-        });
-
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-
-        if (connection) {
-            connection.onchange = (event) => {
-                console.log('changed', event); // eslint-disable-line
-                return this.reinitSockets(true);
-            };
-        }
-    }
-
-    reinitSockets = async (timeout) => {
-        const { history, currentPeer: { emitter } } = this.props;
-
-        try {
-            emitter.reInitWS(timeout);
-        } catch (error) {
-            return history.push('/error');
-        }
-    }
-
     startCall = async () => {
         const { history, currentUserId, fetchCurrentUserDispatch } = this.props;
 
         if (!currentUserId) {
-            await fetchCurrentUserDispatch();
+            try {
+                await fetchCurrentUserDispatch();
+            } catch (error) {
+                this.setState({
+                    error
+                });
+            }
         }
 
         history.push('/call');
     }
 
-    componentWillMount() {
-        this.init();
-    }
+    componentWillReceiveProps() {
+        const { error } = this.state || {};
 
-    componentWillReceiveProps(nextProps) {
-        const { currentPeer: { emitter } } = nextProps;
-
-        !emitter && this.init(nextProps);
-    }
-
-    componentWillUnmount() {
-        this.reinitTimeout && clearTimeout(this.reinitTimeout);
+        if (error) {
+            throw error;
+        }
     }
 
     render() {
@@ -116,28 +77,18 @@ class Start extends Component {
 
 Start.propTypes = {
     history: PropTypes.shape({}).isRequired,
-    currentPeer: PropTypes.shape({
-        emitter: PropTypes.shape({}),
-        creating: PropTypes.bool
-    }),
     currentUserId: PropTypes.number,
-    initEmitterDispatch: PropTypes.func.isRequired,
     fetchCurrentUserDispatch: PropTypes.func.isRequired
 };
 
 function mapStoreToProps(store) {
     return {
-        currentPeer: {
-            emitter: store.currentPeer.emitter,
-            creating: store.currentPeer.creating
-        },
         currentUserId: store.currentUser.id
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        initEmitterDispatch: initEmitter,
         fetchCurrentUserDispatch: fetchCurrentUser
     }, dispatch);
 }

@@ -16,7 +16,7 @@ import { setCurrentTerminal } from '../../redux/actions/terminals';
 import { Ringing, Button, LogoSpinner } from '../../../shared/components';
 import { File, TerminalInfo } from '../';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 const messages = defineMessages({
     startSession: {
@@ -26,6 +26,25 @@ const messages = defineMessages({
 });
 
 class Video extends Component {
+    static propTypes = {
+        currentPeer: PropTypes.shape({
+            emitter: PropTypes.shape({}).isRequired,
+            fileError: PropTypes.shape({}),
+            peer: PropTypes.shape({}).isRequired,
+            localStream: PropTypes.shape({}),
+            remoteStream: PropTypes.shape({}),
+            file: PropTypes.string
+        }).isRequired,
+        setLocalStreamDispatch: PropTypes.func.isRequired,
+        setRemoteStreamDispatch: PropTypes.func.isRequired,
+        setCurrentTerminalDispatch: PropTypes.func.isRequired,
+        setCurrentFileDispatch: PropTypes.func.isRequired,
+        setCurrentFileErrorDispatch: PropTypes.func.isRequired,
+        pushDispatch: PropTypes.func.isRequired,
+        intl: PropTypes.shape({}).isRequired,
+        currentTerminal: PropTypes.shape({})
+    }
+
     constructor() {
         super();
 
@@ -326,25 +345,6 @@ class Video extends Component {
         return element;
     }
 }
-
-Video.propTypes = {
-    currentPeer: PropTypes.shape({
-        emitter: PropTypes.shape({}).isRequired,
-        fileError: PropTypes.shape({}),
-        peer: PropTypes.shape({}).isRequired,
-        localStream: PropTypes.shape({}),
-        remoteStream: PropTypes.shape({}),
-        file: PropTypes.string
-    }).isRequired,
-    setLocalStreamDispatch: PropTypes.func.isRequired,
-    setRemoteStreamDispatch: PropTypes.func.isRequired,
-    setCurrentTerminalDispatch: PropTypes.func.isRequired,
-    setCurrentFileDispatch: PropTypes.func.isRequired,
-    setCurrentFileErrorDispatch: PropTypes.func.isRequired,
-    pushDispatch: PropTypes.func.isRequired,
-    intl: PropTypes.shape({}).isRequired,
-    currentTerminal: PropTypes.shape({})
-};
 
 function mapStoreToProps(store) {
     return {

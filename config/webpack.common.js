@@ -48,7 +48,8 @@ const defConfig = {
                 ]
             },
             {
-                test: /\.global\.css$/,
+                test: /\.css$/,
+                exclude: /\w*\.m\.css$/,
                 use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [
@@ -58,7 +59,7 @@ const defConfig = {
                 }))
             },
             {
-                test: /(^((?!(global)).)*)\.css$/,
+                test: /\.m\.css$/,
                 use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [
@@ -83,7 +84,8 @@ const defConfig = {
                 ]
             },
             {
-                test: /\.global\.scss$/,
+                test: /\.scss$/,
+                exclude: /\w*\.m\.scss$/,
                 use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [
@@ -93,7 +95,7 @@ const defConfig = {
                 }))
             },
             {
-                test: /(^((?!(global)).)*)\.scss$/,
+                test: /\.m\.scss$/,
                 use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [

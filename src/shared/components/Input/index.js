@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Icon } from '../';
 
-import inputStyles from './index.scss';
+import inputStyles from './index.m.scss';
 
 class Input extends Component {
     constructor() {

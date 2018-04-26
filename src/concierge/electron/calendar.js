@@ -62,6 +62,7 @@ getStats(config)
 
 function mapEvent(event, calendar) {
     const {
+        id,
         summary,
         description,
         colorId,
@@ -74,6 +75,7 @@ function mapEvent(event, calendar) {
             date: endDate,
             dateTime: endDateTime
         },
+        location
     } = event;
 
     const { bgColor, summary: calendarTitle } = calendarList[calendar];
@@ -84,6 +86,7 @@ function mapEvent(event, calendar) {
     }
 
     const result = {
+        id,
         attachments,
         calendar,
         calendarTitle,
@@ -93,7 +96,8 @@ function mapEvent(event, calendar) {
         startDate: startDate,
         startTime: startDateTime,
         endDate: endDate,
-        endTime: endDateTime
+        endTime: endDateTime,
+        location
     };
 
     return result;

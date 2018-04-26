@@ -3,9 +3,13 @@ import PropTypes from 'prop-types';
 
 import { TerminalInfo } from '../';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class Terminal extends Component {
+    static propTypes = {
+        terminal: PropTypes.shape({}).isRequired
+    }
+
     render() {
         const { terminal } = this.props;
 
@@ -19,9 +23,5 @@ class Terminal extends Component {
         );
     }
 }
-
-Terminal.propTypes = {
-    terminal: PropTypes.shape({}).isRequired
-};
 
 export default Terminal;
