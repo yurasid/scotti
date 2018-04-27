@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class FilePreview extends Component {
     constructor(props) {

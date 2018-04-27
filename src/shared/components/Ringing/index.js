@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Icon } from '../';
 
-import styles from './index.css';
+import styles from './index.m.css';
 
 class Ring extends Component {
     constructor(props) {

@@ -9,9 +9,17 @@ import { TerminalInfo } from '../index';
 
 import { Icon, Button, FileView } from '../../../shared/components';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class Aside extends Component {
+    static propTypes = {
+        localStream: PropTypes.shape({}),
+        emitter: PropTypes.shape({}),
+        remoteStream: PropTypes.shape({}),
+        currentTerminal: PropTypes.shape({}),
+        peer: PropTypes.shape({})
+    };
+
     constructor() {
         super();
 
@@ -112,14 +120,6 @@ class Aside extends Component {
         );
     }
 }
-
-Aside.propTypes = {
-    localStream: PropTypes.shape({}),
-    emitter: PropTypes.shape({}),
-    remoteStream: PropTypes.shape({}),
-    currentTerminal: PropTypes.shape({}),
-    peer: PropTypes.shape({})
-};
 
 function mapStoreToProps(store) {
     return {

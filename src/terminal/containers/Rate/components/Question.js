@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import { Button } from '../../../../shared/components';
 
-import styles from '../index.scss';
+import styles from '../index.m.scss';
 
 const messages = defineMessages({
     yesButton: {

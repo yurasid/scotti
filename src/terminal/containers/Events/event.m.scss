@@ -1,0 +1,131 @@
+.hide{
+    height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.top {
+    height: 27vh;
+    width: 100%;
+    position: relative;
+    &:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        background: rgba($color: #000000, $alpha: .5);
+    }
+}
+
+.topData {
+    transition: 200ms;
+    position: absolute;
+    bottom: 100%;
+    box-sizing: border-box;
+    width: 50%;
+    padding: 3vw 2vw;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Open Sans';
+    font-size: 2.5vw;
+    align-items: flex-start;
+    justify-content: flex-end;
+    & > span:first-child {
+        text-transform: uppercase;
+        & > span:first-child {
+            font-weight: bold;
+            font-size: 5vw;
+            margin-right: 1.5vw;
+        }
+    }
+}
+
+.minimized {
+    transform: translateY(100%);
+    flex-direction: row;
+    padding: 0 0 0 2vw;
+    align-items: baseline;
+    justify-content: flex-start;
+    width: 100%;
+    & > span:last-child {
+        margin-left: 2vw;
+    }
+}
+
+.bottom {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.collapsed {
+    background-color: #4C4D4F;
+}
+
+.shortInfo {
+    background-color: #4C4D4F;
+    font-family: 'Open Sans';
+    font-size: 2.7vw;
+    display: flex;
+    flex-direction: row;
+    height: 8.5vh;
+    & > div {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        margin-top: 1vh;
+        & > span svg{
+            margin: 0 1vw 0 2vw;
+        }
+    }
+}
+
+.description { 
+    background-color: #4C4D4F;
+    font-size: 2vw;
+    padding-top: 2vh;
+    max-width: 100%;
+    flex: 1;
+    
+    & ol {
+        list-style-type: decimal;
+        list-style-position: inside;
+    }
+}
+
+.plus {
+	background-color: #fff;
+	font-size: 3vw;
+	height: 2.5em;
+	min-width: 2.5em;
+	position: relative;
+	
+	&:after,
+	&:before {
+		content: "";
+		display: block;
+		background-color: #4C4D4F;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+        transform: translate(-50%, -50%);
+        transition: 200ms;
+	}
+	
+	&:before {
+		height: 1em;
+		width: 0.2em;
+	}
+
+	&:after {
+		height: 0.2em;
+		width: 1em;
+	}
+}
+
+.minus:before {
+    transform: translate(-50%, -50%) rotate(90deg);
+}

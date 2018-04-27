@@ -3,6 +3,12 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 class Event extends Component {
+    static propTypes = {
+        event: PropTypes.shape({
+            title: PropTypes.string
+        }).isRequired
+    }
+
     render() {
         const { event } = this.props;
         const { title, startTime } = event;
@@ -19,11 +25,5 @@ class Event extends Component {
         );
     }
 }
-
-Event.propTypes = {
-    event: PropTypes.shape({
-        title: PropTypes.string
-    }).isRequired
-};
 
 export default Event;

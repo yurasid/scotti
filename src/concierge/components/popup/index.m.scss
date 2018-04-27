@@ -1,6 +1,6 @@
 .popup {
     position: absolute;
-    margin: 24px;
+    margin: 3vmin 3vmin 0;
     top: 0;
     left: 0;
     bottom: 0;
@@ -9,7 +9,7 @@
     box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.22);
     display: flex;
     flex-direction: column;
-    padding: 3vmin 3vmin 0;
+    padding: 3vmin;
     background-color: #ffffff;
 }
 
@@ -19,6 +19,7 @@
 }
 
 .close{
+    z-index: 999;
     position: relative;
     align-self: flex-end;
     display: inline-block;

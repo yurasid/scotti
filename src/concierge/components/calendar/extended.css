@@ -1,14 +1,15 @@
+.rbc-calendar {
+    flex: 1;
+    align-self: stretch;
+    margin-top: 1vh;
+}
+
+.rbc-calendar.dashboardStyle {
+    margin: 3vmin;
+}
+
 .rbc-toolbar {
     position: relative;
-}
-
-.rbc-event-wrapper .rbc-event {
-    color: currentColor;
-    background-color: currentColor;
-}
-
-.rbc-event-wrapper .rbc-event .rbc-event-content {
-    color: white;
 }
 
 .rbc-event-wrapper .rbc-event .rbc-event-content .startTime{
@@ -70,8 +71,13 @@
     margin-top: .5vh;
     font-size: .7vw;
 }
+.popupContainer .contentBlock span:first-child, 
+.popupContainer .contentBlock span:last-child {
+    line-height: 50%;
+}
 
 .popupContainer .contentBlock .description {
+    display: flex;
     margin-top: 2vh;
     max-height: 80%;
     max-width: 100%;
@@ -85,6 +91,10 @@
 }
 
 .popupContainer .contentBlock .attachments {
+    display: flex;
+}
+
+.popupContainer .contentBlock .attachments ul {
     list-style: none;
     list-style-position: inside;
 }
@@ -153,4 +163,20 @@
 
 .popupContainer .titleBlock .closeBtn::after {
     transform: rotate(-45deg);
+}
+
+.rbc-agenda-view {
+    position: relative;
+}
+
+.rbc-agenda-content {
+    flex: 1;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.rbc-time-view {
+    overflow-y: auto;
+    overflow-x: hidden;
 }

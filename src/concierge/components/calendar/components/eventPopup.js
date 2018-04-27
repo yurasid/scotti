@@ -3,11 +3,35 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import moment from 'moment';
+import { MdAccessTime, MdEvent, MdDescription, MdAttachFile } from 'react-icons/lib/md';
+
 
 import { setSelectedEvent } from '../../../../shared/redux/actions/calendar';
 
 
 class EventPopup extends Component {
+    static propTypes = {
+        event: PropTypes.shape({
+            title: PropTypes.string,
+            desc: PropTypes.string,
+            bgColor: PropTypes.string,
+            attachments: PropTypes.array,
+            measure: PropTypes.shape({
+                left: PropTypes.number,
+                top: PropTypes.number,
+                width: PropTypes.number,
+                height: PropTypes.number
+            })
+        }),
+        overlay: PropTypes.shape({
+            top: PropTypes.number,
+            left: PropTypes.number,
+            width: PropTypes.number,
+            height: PropTypes.number
+        }).isRequired,
+        setSelectedEventDispatch: PropTypes.func.isRequired
+    }
+
     constructor() {
         super();
 
@@ -91,32 +115,43 @@ class EventPopup extends Component {
                                 <span>{title}</span>
                             </div>
                             <div className='contentBlock'>
-                                <span>{
-                                    allDay ? moment(start).format(formatString) :
-                                        `${moment(start).format(formatString)} - ${moment(end).format(formatString)}`
-                                }</span>
+                                <span>
+                                    <MdAccessTime />
+                                    {
+                                        allDay ? moment(start).format(formatString) :
+                                            `${moment(start).format(formatString)} - ${moment(end).format(formatString)}`
+                                    }</span>
                                 <div
                                     className='description'
-                                    dangerouslySetInnerHTML={{ __html: desc }}
-                                />
+                                >
+                                    <MdDescription />
+                                    <div
+                                        dangerouslySetInnerHTML={{ __html: desc }}
+                                    />
+                                </div>
                                 {attachments && (
-                                    <ul className='attachments'>
-                                        {attachments.map(attachment => (
-                                            <li key={attachment.fileId}>
-                                                <a
-                                                    href={attachment.fileUrl}
-                                                    rel='noopener noreferrer'
-                                                    title={attachment.title}
-                                                    target='_blank'
-                                                >
-                                                    <img src={attachment.iconLink} />
-                                                    <span>{attachment.title}</span>
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    <div
+                                        className='attachments'
+                                    >
+                                        <MdAttachFile />
+                                        <ul>
+                                            {attachments.map(attachment => (
+                                                <li key={attachment.fileId}>
+                                                    <a
+                                                        href={attachment.fileUrl}
+                                                        rel='noopener noreferrer'
+                                                        title={attachment.title}
+                                                        target='_blank'
+                                                    >
+                                                        <img src={attachment.iconLink} />
+                                                        <span>{attachment.title}</span>
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 )}
-                                <span>{calendarTitle}</span>
+                                <span><MdEvent />{calendarTitle}</span>
                             </div>
                         </div>
                     </div>
@@ -125,28 +160,6 @@ class EventPopup extends Component {
         );
     }
 }
-
-EventPopup.propTypes = {
-    event: PropTypes.shape({
-        title: PropTypes.string,
-        desc: PropTypes.string,
-        bgColor: PropTypes.string,
-        attachments: PropTypes.array,
-        measure: PropTypes.shape({
-            left: PropTypes.number,
-            top: PropTypes.number,
-            width: PropTypes.number,
-            height: PropTypes.number
-        })
-    }),
-    overlay: PropTypes.shape({
-        top: PropTypes.number,
-        left: PropTypes.number,
-        width: PropTypes.number,
-        height: PropTypes.number
-    }).isRequired,
-    setSelectedEventDispatch: PropTypes.func.isRequired
-};
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({

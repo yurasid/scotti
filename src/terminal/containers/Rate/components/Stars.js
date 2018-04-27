@@ -6,7 +6,7 @@ import Rating from 'react-rating';
 
 import { Icon } from '../../../../shared/components/';
 
-import styles from '../index.scss';
+import styles from '../index.m.scss';
 
 class Stars extends Component {
     constructor() {

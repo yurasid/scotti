@@ -6,8 +6,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
 
+import { initEmitter } from '../../redux/actions/peerConnection';
 import { Icon } from '../../../shared/components';
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class Main extends Component {
     constructor() {
@@ -17,6 +18,41 @@ class Main extends Component {
             height: 0,
             width: 0
         };
+    }
+
+    init = async (props) => {
+        const {
+            initEmitterDispatch,
+            emitter,
+            creating,
+            currentUserId
+        } = props || this.props;
+
+        if (!emitter && currentUserId) {
+            return !creating && initEmitterDispatch('terminal');
+        }
+
+        if (emitter) {
+            emitter.addListener('unauthenticated', () => {
+                this.reinitSockets();
+            });
+        }
+    }
+
+    reinitSockets = async (timeout) => {
+        const { pushDispatch, emitter } = this.props;
+
+        try {
+            emitter.reInitWS(timeout);
+        } catch (error) {
+            return pushDispatch('/error');
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const { emitter } = nextProps;
+
+        !emitter && this.init(nextProps);
     }
 
     componentDidMount() {
@@ -29,11 +65,22 @@ class Main extends Component {
             width,
             height
         });
+
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+
+        if (connection) {
+            connection.onchange = (event) => {
+                console.log('changed', event); // eslint-disable-line
+                return this.reinitSockets(true);
+            };
+        }
+
+        this.init();
     }
 
     componentDidCatch() {
         const { pushDispatch } = this.props;
-        
+
         pushDispatch('/login');
     }
 
@@ -99,13 +146,25 @@ class Main extends Component {
 
 Main.propTypes = {
     children: PropTypes.element,
-    pushDispatch: PropTypes.func.isRequired
+    pushDispatch: PropTypes.func.isRequired,
+    emitter: PropTypes.shape({}),
+    creating: PropTypes.bool,
+    currentUserId: PropTypes.number
 };
+
+function mapStoreToProps(store) {
+    return {
+        emitter: store.currentPeer.emitter,
+        creating: store.currentPeer.creating,
+        currentUserId: store.currentUser.id
+    };
+}
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
+        initEmitterDispatch: initEmitter,
         pushDispatch: push
     }, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(Main);
+export default connect(mapStoreToProps, mapDispatchToProps)(Main);

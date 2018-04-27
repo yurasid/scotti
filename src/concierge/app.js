@@ -20,7 +20,7 @@ import {
     generateHttpOptions
 } from '../shared/utils/http';
 
-require('./index.global.scss');
+import './index.scss';
 
 setReducers(reducers);
 
@@ -31,6 +31,10 @@ const language = (navigator.languages && navigator.languages[0]) ||
     navigator.userLanguage;
 
 class RootComponent extends Component {
+    static propTypes = {
+        updateIntlDispatch: PropTypes.func.isRequired
+    }
+
     getTranslations = async () => {
         const { updateIntlDispatch } = this.props;
 
@@ -62,10 +66,6 @@ class RootComponent extends Component {
         );
     }
 }
-
-RootComponent.propTypes = {
-    updateIntlDispatch: PropTypes.func.isRequired
-};
 
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({

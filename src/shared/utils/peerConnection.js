@@ -37,7 +37,9 @@ class PeerConnection {
 
         this.emitter = emitter;
 
-        this.pc = new RTCPeerConnection(config);
+        this.pc = new RTCPeerConnection({});
+
+        this.pc.setConfiguration(config);
 
         this.subscribeEvents();
     }
@@ -79,6 +81,10 @@ class PeerConnection {
             if (type === 'fileReceived') {
                 this.emitter.emit('dc_fileReceived', endOfMessage);
             }
+
+            if (type === 'events') {
+                this.emitter.emit('dc_events', endOfMessage);
+            }
         };
 
         this.dc.onoppen = (event) => {
@@ -94,20 +100,26 @@ class PeerConnection {
         };
     }
 
-    subscribeEvents = () => {
-        this.emitter.addListener('offer', this.createAnswer);
-        this.emitter.addListener('answer', (msg) => {
-            this.pc.setRemoteDescription(new RTCSessionDescription(msg));
-            this.registerAtOnce = true;
-        });
-        this.emitter.addListener('candidate', (msg) => {
-            const { id, candidate } = msg;
-            if (id && candidate) {
-                this.registerAtOnce ? this.addCandidates(msg) : this.candidates.push(msg);
-            }
+    addEmitterListeners = () => {
+        this.emitterEvents = {
+            offer: this.emitter.addListener('offer', this.createAnswer),
+            answer: this.emitter.addListener('answer', (msg) => {
+                this.pc.setRemoteDescription(new RTCSessionDescription(msg));
+                this.registerAtOnce = true;
+            }),
+            candidate: this.emitter.addListener('candidate', (msg) => {
+                const { id, candidate } = msg;
+                if (id && candidate) {
+                    this.registerAtOnce ? this.addCandidates(msg) : this.candidates.push(msg);
+                }
+    
+                this.addCandidates();
+            })
+        };
+    }
 
-            this.addCandidates();
-        });
+    subscribeEvents = () => {
+        this.addEmitterListeners();
 
         this.pc.ondatachannel = (event) => {
             this.dc = event.channel;
@@ -154,6 +166,14 @@ class PeerConnection {
 
 
     close = () => {
+        const events = Object.keys(this.emitterEvents || {});
+
+        events.map((eventName) => {
+            this.emitterEvents[eventName].remove();
+        });
+
+        this.emitterEvents = null;
+
         if (this.dc) {
             this.dc.close();
         }
@@ -228,6 +248,8 @@ class PeerConnection {
         this.pc.setRemoteDescription(new RTCSessionDescription(msg));
         this.registerAtOnce = true;
 
+        console.log('answer'); // eslint-disable-line
+
         this.pc.createAnswer()
             .then((desc) => {
                 this.candidates = [];
@@ -257,7 +279,22 @@ class PeerConnection {
     }
 
     sendDCMessage = (message) => {
-        this.dc && this.dc.send(JSON.stringify(message));
+        if (this.dc && this.dc.readyState === 'open') {
+            try {
+                this.dc.send(JSON.stringify(message));
+            } catch(err) {
+                return false;
+            }
+        }
+    }
+
+    sendEvents = (events) => {
+        const data = {
+            type: 'events',
+            events
+        };
+
+        this.sendDCMessage(data);
     }
 
     sendFile = async (fileDataURL = '') => {

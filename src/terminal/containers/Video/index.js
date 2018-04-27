@@ -6,11 +6,12 @@ import classNames from 'classnames';
 
 import PeerConnection from '../../../shared/utils/peerConnection';
 import { Button, Loader, FileView } from '../../../shared/components/';
+import Events from '../Events/';
 import LoaderComponent from './components/loader';
 import BusyComponent from './components/busy';
 import OnHold from './components/holdon';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 const messages = defineMessages({
     hangUp: {
@@ -121,8 +122,6 @@ class Video extends Component {
     }
 
     deinit = () => {
-        const { history } = this.props;
-
         this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
 
         this.myvideo && this.myvideo.pause();
@@ -140,11 +139,17 @@ class Video extends Component {
             this.localStream = null;
         }
 
-        const { call_id } = this.callInfo || {};
+        this.goToRateScreenTimeout = setTimeout(this.goToRate, 2000);
+    }
+
+    goToRate = (call_id) => {
+        const { history } = this.props;
+
+        this.goToRateScreenTimeout && clearTimeout(this.goToRateScreenTimeout);
 
         this.peerConnection && this.peerConnection.close();
 
-        const pushState = call_id ? { call_id } : { step: -1 };
+        const pushState = call_id ? { call_id, step: 1 } : { step: -1 };
 
         history.push('/rate', pushState);
     }
@@ -159,8 +164,6 @@ class Video extends Component {
         emitter.sendMessage({
             type: 'hang_up'
         });
-
-        this.deinit();
     }
 
     busyHandler = () => {
@@ -174,13 +177,16 @@ class Video extends Component {
         emitter.addListener('ready_call', this.createOffer);
         emitter.addListener('remote_stream', this.gotremoteStream);
 
-        emitter.addListener('call_started', (msg) => {
-            this.callInfo = msg;
-        });
-
-        emitter.addListener('hang_up', () => {
+        emitter.addListener('call_ended', ({ call_id }) => {
             this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
             this.deinit();
+            this.goToRate(call_id);
+        });
+
+        emitter.addListener('hang_up', ({ call_id }) => {
+            this.wantCallTimeout && clearTimeout(this.wantCallTimeout);
+            this.deinit();
+            this.goToRate(call_id);
         });
 
         emitter.addListener('busy', this.busyHandler);
@@ -196,6 +202,12 @@ class Video extends Component {
             this.setState({
                 onhold: state
             }, this.setRemoteVideostream);
+        });
+
+        emitter.addListener('dc_events', ({ events }) => {
+            this.setState({
+                events
+            });
         });
     }
 
@@ -253,7 +265,10 @@ class Video extends Component {
 
     render() {
         const { intl: { formatMessage } } = this.props;
-        const { error, video, remoteStream, remoteStreamLoaded, busy, onhold } = this.state;
+        const { error, video, remoteStream,
+            remoteStreamLoaded, busy, onhold,
+            events
+        } = this.state;
 
         return (
             <div className={styles.mainContainer}>
@@ -275,7 +290,7 @@ class Video extends Component {
                                             autoPlay
                                             ref={video => this.conciergevideo = video}
                                             className={classNames({
-                                                [styles.displayNone]: !remoteStreamLoaded
+                                                [styles.displayNone]: !remoteStreamLoaded || (events && events.length)
                                             })}
                                         />
                                         {!remoteStreamLoaded && <LoaderComponent />}
@@ -287,6 +302,7 @@ class Video extends Component {
                                     showOnFile={true}
                                     peer={this.peerConnection}
                                 />
+                                <Events events={events} />
                             </Fragment>
                         </Loader>
                     </Loader>

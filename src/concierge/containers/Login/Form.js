@@ -7,7 +7,7 @@ import { required as requiredCreator, maxLength, minLength } from '../../../shar
 
 import { Input } from '../../../shared/components';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 const required = requiredCreator();
 

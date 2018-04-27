@@ -7,9 +7,20 @@ import { fetchTerminals, updateTerminalStatus } from '../../redux/actions/termin
 
 import Terminal from './terminal';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class Terminals extends Component {
+    static propTypes = {
+        fetchTerminalsDispatch: PropTypes.func.isRequired,
+        updateTerminalStatusDispatch: PropTypes.func.isRequired,
+        terminals: PropTypes.array,
+        emitter: PropTypes.shape({})
+    }
+
+    static defaultProps = {
+        terminals: []
+    }
+
     updateHandler = ({ terminal_id }, status) => {
         const { updateTerminalStatusDispatch } = this.props;
 
@@ -55,17 +66,6 @@ class Terminals extends Component {
         );
     }
 }
-
-Terminals.propTypes = {
-    fetchTerminalsDispatch: PropTypes.func.isRequired,
-    updateTerminalStatusDispatch: PropTypes.func.isRequired,
-    terminals: PropTypes.array,
-    emitter: PropTypes.shape({})
-};
-
-Terminals.defaultProps = {
-    terminals: []
-};
 
 function mapStateToProps(store) {
     return {

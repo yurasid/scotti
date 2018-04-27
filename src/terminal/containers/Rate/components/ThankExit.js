@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { Icon } from '../../../../shared/components';
 
-import styles from '../index.scss';
+import styles from '../index.m.scss';
 
 const ThankYou = () => {
     const vmin = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;

@@ -12,7 +12,7 @@ import { logError } from '../../redux/actions/logger';
 import { Loader } from '../../../shared/components/';
 import NotAvailable from './components/notAvailable';
 
-import styles from './index.scss';
+import styles from './index.m.scss';
 
 class Login extends Component {
     constructor() {
@@ -87,9 +87,12 @@ class Login extends Component {
     }
 
     componentWillReceiveProps() {
-        const { loginTries: { timeout } } = this.props;
+        const { emitter, creating, loginTries: { timeout } } = this.props;
 
-        this.timeout = setTimeout(this.login, timeout);
+        if (!emitter && !creating) {
+            this.timeout = clearTimeout(this.timeout);
+            this.timeout = setTimeout(this.login, timeout);
+        }
     }
 
     render() {
@@ -130,12 +133,14 @@ Login.propTypes = {
     fetchCurrentUserDispatch: PropTypes.func.isRequired,
     setCurrentEmitterDispatch: PropTypes.func.isRequired,
     logErrorDispatch: PropTypes.func.isRequired,
-    emitter: PropTypes.shape({})
+    emitter: PropTypes.shape({}),
+    creating: PropTypes.bool
 };
 
 function mapStoreToProps(store) {
     return {
         emitter: store.currentPeer.emitter,
+        creating: store.currentPeer.creating,
         loginTries: store.loginTries
     };
 }

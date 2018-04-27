@@ -5,6 +5,10 @@ import { connect } from 'react-redux';
 import EventPopup from './eventPopup';
 
 class PopupsWrapper extends Component {
+    static propTypes = {
+        event: PropTypes.shape({})
+    }
+
     constructor() {
         super();
 
@@ -41,10 +45,6 @@ class PopupsWrapper extends Component {
         );
     }
 }
-
-PopupsWrapper.propTypes = {
-    event: PropTypes.shape({})
-};
 
 function mapStoreToProps(store) {
     return {
